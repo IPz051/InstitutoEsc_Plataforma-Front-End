@@ -79,7 +79,7 @@ export default function LoginPage() {
               <div className="min-w-0">
                 <p className="font-heading text-base font-semibold">Comunidade ESC</p>
                 <p className="mt-0.5 text-sm text-primary-foreground/75">
-                  advogados previdenciaristas ativos
+                  Advogados previdenciaristas ativos
                 </p>
               </div>
             </div>
@@ -159,7 +159,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="voce@escritorio.com"
+                    placeholder="seuemail@exemplo.com"
                     className="pl-9"
                     required
                   />

@@ -117,7 +117,7 @@ export function ExamView({
                 tone="danger"
                 icon={Lock}
                 title="Tentativas esgotadas"
-                desc="Você utilizou todas as 5 tentativas disponíveis para esta avaliação."
+                desc={`Você utilizou todas as ${exam.maxAttempts} tentativas disponíveis para esta avaliação.`}
               />
             ) : (
               <Banner

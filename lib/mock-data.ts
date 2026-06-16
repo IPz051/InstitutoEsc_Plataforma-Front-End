@@ -107,7 +107,7 @@ export const student = {
   initials: "MC",
   role: "Pós-graduação em Direito Previdenciário",
   planName: "Premium",
-  planDetails: "Plano ativo • trava vitalícia",
+  planDetails: "Plano ativo • acesso vitalício",
 }
 
 function makeQuestions(prefix: string): Question[] {

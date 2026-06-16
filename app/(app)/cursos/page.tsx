@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import {
   CalendarDays,
@@ -35,6 +35,14 @@ function getTabFromSearchParams(selectedTab: string | null): Tab {
 }
 
 export default function CoursesPage() {
+  return (
+    <Suspense fallback={<CoursesPageFallback />}>
+      <CoursesPageContent />
+    </Suspense>
+  )
+}
+
+function CoursesPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [tab, setTab] = useState<Tab>(() => getTabFromSearchParams(searchParams.get("tipo")))
@@ -201,6 +209,25 @@ export default function CoursesPage() {
             ))}
           </div>
         )}
+      </div>
+    </>
+  )
+}
+
+function CoursesPageFallback() {
+  return (
+    <>
+      <AppNavbar title="Meus Cursos" />
+      <div className="flex flex-col gap-6 p-4 md:p-6">
+        <div className="h-13 rounded-full bg-white shadow-sm ring-1 ring-[#e7ecff]" />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-72 rounded-2xl bg-white shadow-sm ring-1 ring-[#e7ecff]"
+            />
+          ))}
+        </div>
       </div>
     </>
   )
