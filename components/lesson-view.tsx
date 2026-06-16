@@ -30,11 +30,13 @@ export function LessonView({
   current,
   prev,
   next,
+  basePath = "/cursos",
 }: {
   course: Course
   current: { lesson: Lesson; moduleTitle: string }
   prev?: { lesson: Lesson; moduleTitle: string }
   next?: { lesson: Lesson; moduleTitle: string }
+  basePath?: string
 }) {
   const [playing, setPlaying] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -51,15 +53,27 @@ export function LessonView({
       <div className="flex flex-1 flex-col">
         {/* Player */}
         <div className="relative aspect-video w-full bg-primary">
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-primary-foreground">
-            {playing ? (
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold/20">
-                  <span className="flex h-3 w-3 animate-ping rounded-full bg-gold" />
-                </div>
-                <p className="text-sm text-primary-foreground/70">Reproduzindo aula...</p>
-              </div>
+          {playing ? (
+            current.lesson.videoUrl ? (
+              <video
+                className="absolute inset-0 h-full w-full"
+                controls
+                autoPlay
+                playsInline
+                src={current.lesson.videoUrl}
+              />
             ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-primary-foreground">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold/20">
+                    <span className="flex h-3 w-3 animate-ping rounded-full bg-gold" />
+                  </div>
+                  <p className="text-sm text-primary-foreground/70">Reproduzindo aula...</p>
+                </div>
+              </div>
+            )
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-primary-foreground">
               <button
                 onClick={() => setPlaying(true)}
                 className="group flex flex-col items-center gap-3"
@@ -70,8 +84,8 @@ export function LessonView({
                 </span>
                 <span className="text-sm text-primary-foreground/70">Assistir aula</span>
               </button>
-            )}
-          </div>
+            </div>
+          )}
           <span className="absolute bottom-4 left-4 rounded bg-background/20 px-2 py-1 text-xs text-primary-foreground backdrop-blur">
             {current.lesson.duration}
           </span>
@@ -97,7 +111,7 @@ export function LessonView({
           <div className="flex items-center justify-between gap-3">
             {prev ? (
               <Button asChild variant="outline" size="sm">
-                <Link href={`/cursos/${course.id}/aula/${prev.lesson.id}`}>
+                <Link href={`${basePath}/${course.id}/aula/${prev.lesson.id}`}>
                   <ChevronLeft className="h-4 w-4" />
                   Aula anterior
                 </Link>
@@ -107,14 +121,14 @@ export function LessonView({
             )}
             {next ? (
               <Button asChild size="sm">
-                <Link href={`/cursos/${course.id}/aula/${next.lesson.id}`}>
+                <Link href={`${basePath}/${course.id}/aula/${next.lesson.id}`}>
                   Próxima aula
                   <ChevronRight className="h-4 w-4" />
                 </Link>
               </Button>
             ) : (
               <Button asChild size="sm">
-                <Link href={`/cursos/${course.id}`}>Concluir módulo</Link>
+                <Link href={`${basePath}/${course.id}`}>Concluir módulo</Link>
               </Button>
             )}
           </div>
@@ -205,7 +219,7 @@ export function LessonView({
                   return (
                     <li key={lesson.id}>
                       <Link
-                        href={`/cursos/${course.id}/aula/${lesson.id}`}
+                        href={`${basePath}/${course.id}/aula/${lesson.id}`}
                         onClick={() => setSidebarOpen(false)}
                         className={cn(
                           "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors",
@@ -233,7 +247,7 @@ export function LessonView({
                 {mod.exam && (
                   <li>
                     <Link
-                      href={`/cursos/${course.id}/prova/${mod.exam.id}`}
+                      href={`${basePath}/${course.id}/prova/${mod.exam.id}`}
                       onClick={() => setSidebarOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-secondary"
                     >

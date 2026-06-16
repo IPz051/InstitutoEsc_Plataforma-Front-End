@@ -29,6 +29,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(true)
   const [language, setLanguage] = useState<"pt" | "en">("pt")
+  const landingPageHref =
+    process.env.NEXT_PUBLIC_LANDING_URL?.replace(/\/$/, "") ?? "http://localhost:3001"
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -102,7 +104,7 @@ export default function LoginPage() {
       <section className="flex min-h-screen flex-col bg-background p-6 sm:p-10">
         <div className="flex items-center justify-between gap-4">
           <Link
-            href="#"
+            href={landingPageHref}
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />

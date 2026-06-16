@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import {
   Home,
   BookOpen,
   Award,
   Calendar,
+  MapPin,
   Users,
   LogOut,
   Sparkles,
@@ -27,9 +28,28 @@ import {
 import { student } from "@/lib/mock-data"
 import logoEsc from "@/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
 
-const navItems = [
+type NavItem = {
+  title: string
+  href: string
+  icon: typeof Home
+  isActive?: (pathname: string, selectedTab: string | null) => boolean
+}
+
+const navItems: NavItem[] = [
   { title: "Início", href: "/dashboard", icon: Home },
-  { title: "Meus cursos", href: "/cursos", icon: BookOpen },
+  {
+    title: "Formação online",
+    href: "/cursos?tipo=online",
+    icon: BookOpen,
+    isActive: (pathname, selectedTab) =>
+      pathname.startsWith("/cursos/") || (pathname === "/cursos" && selectedTab !== "presenciais"),
+  },
+  {
+    title: "Cursos presenciais",
+    href: "/cursos?tipo=presenciais",
+    icon: MapPin,
+    isActive: (pathname, selectedTab) => pathname === "/cursos" && selectedTab === "presenciais",
+  },
   { title: "Certificados", href: "/certificados", icon: Award },
   { title: "Calendário", href: "/calendario", icon: Calendar },
   { title: "Comunidade ESC", href: "/comunidade", icon: Users },
@@ -37,6 +57,8 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const selectedTab = searchParams.get("tipo")
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -52,8 +74,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
-                const active =
-                  pathname === item.href || pathname.startsWith(item.href + "/")
+                const active = item.isActive
+                  ? item.isActive(pathname, selectedTab)
+                  : pathname === item.href || pathname.startsWith(item.href + "/")
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
