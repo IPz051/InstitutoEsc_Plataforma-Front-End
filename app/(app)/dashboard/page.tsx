@@ -93,7 +93,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <Link
-              href={resumeCourse ? `/cursos/${resumeCourse.id}` : "/cursos"}
+              href={resumeCourse ? `/formacao-online/${resumeCourse.id}` : "/formacao-online"}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80"
             >
               Continuar <ArrowRight className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default function DashboardPage() {
               Continue aprendendo
             </h3>
             <Link
-              href="/cursos"
+              href="/formacao-online"
               className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
             >
               Ver todos os cursos
@@ -199,7 +199,7 @@ export default function DashboardPage() {
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {inProgress.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard key={course.id} course={course} basePath="/formacao-online" />
             ))}
           </div>
         </section>

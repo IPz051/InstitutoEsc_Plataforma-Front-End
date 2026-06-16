@@ -28,9 +28,11 @@ type Phase = "intro" | "running" | "result"
 export function ExamView({
   course,
   exam,
+  basePath = "/cursos",
 }: {
   course: Course
   exam: Exam
+  basePath?: string
 }) {
   const [phase, setPhase] = useState<Phase>("intro")
   const [answers, setAnswers] = useState<Record<string, string>>({})
@@ -77,7 +79,7 @@ export function ExamView({
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4 md:p-6">
       <Link
-        href={`/cursos/${course.id}`}
+        href={`${basePath}/${course.id}`}
         className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -276,7 +278,7 @@ export function ExamView({
                 </Button>
               )}
               <Button asChild variant="outline">
-                <Link href={`/cursos/${course.id}`}>Voltar ao curso</Link>
+                <Link href={`${basePath}/${course.id}`}>Voltar ao curso</Link>
               </Button>
             </div>
           </CardContent>

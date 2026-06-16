@@ -465,6 +465,150 @@ export const courses: Course[] = [
   },
 ]
 
+export const freeCourses: Course[] = [
+  {
+    id: "marketing-juridico",
+    title: "Marketing Jurídico",
+    shortDescription: "Posicionamento digital, autoridade e captação ética para advogados.",
+    description:
+      "Posicionamento digital, autoridade e captação ética para advogados. Aprenda a estruturar presença, conteúdo e estratégia com consistência.",
+    professor: "Instituto ESC",
+    professorRole: "Curso livre",
+    workload: "58 min",
+    totalLessons: 3,
+    progress: 33,
+    status: "em-andamento",
+    category: "Curso livre",
+    thumbnail: "/courses/gestao-escritorio.png",
+    modules: [
+      {
+        id: "mj-mod1",
+        title: "Fundamentos de marketing",
+        lessons: [
+          {
+            id: "mj-l1",
+            title: "Posicionamento e proposta de valor",
+            duration: "18 min",
+            completed: true,
+            description: "Defina posicionamento, proposta de valor e diferenciais para sua atuação.",
+            videoUrl: "",
+          },
+          {
+            id: "mj-l2",
+            title: "Conteúdo que gera autoridade",
+            duration: "21 min",
+            completed: false,
+            description: "Planeje conteúdos que reforcem sua autoridade de forma estratégica.",
+            videoUrl: "",
+          },
+          {
+            id: "mj-l3",
+            title: "Captação ética e relacionamento",
+            duration: "19 min",
+            completed: false,
+            description: "Estruture uma rotina ética para captar, nutrir e converter oportunidades.",
+            videoUrl: "",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "produtividade-juridica",
+    title: "Produtividade Jurídica",
+    shortDescription: "Rotina, organização e eficiência para ganhar escala sem perder qualidade.",
+    description:
+      "Rotina, organização e eficiência para ganhar escala sem perder qualidade. Organize processos, elimine gargalos e aumente previsibilidade.",
+    professor: "Instituto ESC",
+    professorRole: "Curso livre",
+    workload: "42 min",
+    totalLessons: 3,
+    progress: 0,
+    status: "nao-iniciado",
+    category: "Curso livre",
+    thumbnail: "/courses/inteligencia-emocional.png",
+    modules: [
+      {
+        id: "pj-mod1",
+        title: "Produtividade aplicada",
+        lessons: [
+          {
+            id: "pj-l1",
+            title: "Planejamento semanal do escritório",
+            duration: "14 min",
+            completed: false,
+            description: "Monte uma rotina semanal simples para organizar entregas e prioridades.",
+            videoUrl: "",
+          },
+          {
+            id: "pj-l2",
+            title: "Padronização de tarefas repetitivas",
+            duration: "13 min",
+            completed: false,
+            description: "Padronize tarefas recorrentes para reduzir retrabalho na operação.",
+            videoUrl: "",
+          },
+          {
+            id: "pj-l3",
+            title: "Indicadores para acompanhar execução",
+            duration: "15 min",
+            completed: false,
+            description: "Acompanhe execução com indicadores práticos e objetivos.",
+            videoUrl: "",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "atendimento-humanizado",
+    title: "Atendimento Humanizado",
+    shortDescription: "Experiência do cliente, escuta ativa e comunicação clara no jurídico.",
+    description:
+      "Experiência do cliente, escuta ativa e comunicação clara no jurídico. Aprenda a conduzir atendimentos mais seguros e empáticos.",
+    professor: "Instituto ESC",
+    professorRole: "Curso livre",
+    workload: "36 min",
+    totalLessons: 3,
+    progress: 100,
+    status: "concluido",
+    category: "Curso livre",
+    thumbnail: "/courses/pericia-medica.png",
+    modules: [
+      {
+        id: "ah-mod1",
+        title: "Atendimento e experiência",
+        lessons: [
+          {
+            id: "ah-l1",
+            title: "Escuta ativa no primeiro contato",
+            duration: "12 min",
+            completed: true,
+            description: "Conduza o primeiro atendimento com mais clareza, empatia e direção.",
+            videoUrl: "",
+          },
+          {
+            id: "ah-l2",
+            title: "Comunicação simples e segura",
+            duration: "11 min",
+            completed: true,
+            description: "Explique etapas, riscos e expectativas com objetividade.",
+            videoUrl: "",
+          },
+          {
+            id: "ah-l3",
+            title: "Pós-atendimento e fidelização",
+            duration: "13 min",
+            completed: true,
+            description: "Fortaleça o relacionamento com ações simples de acompanhamento.",
+            videoUrl: "",
+          },
+        ],
+      },
+    ],
+  },
+]
+
 export const inPersonCourses: InPersonCourse[] = [
   {
     id: "acidente-trabalho",
@@ -654,12 +798,12 @@ export const communityCategories = [
   "Eventos",
 ]
 
-export function getCourse(id: string) {
-  return courses.find((c) => c.id === id)
+function findCourse(collection: Course[], id: string) {
+  return collection.find((course) => course.id === id)
 }
 
-export function getExam(examId: string) {
-  for (const course of courses) {
+function findExam(collection: Course[], examId: string) {
+  for (const course of collection) {
     for (const mod of course.modules) {
       if (mod.exam?.id === examId) {
         return { course, module: mod, exam: mod.exam }
@@ -669,8 +813,8 @@ export function getExam(examId: string) {
   return undefined
 }
 
-export function getLessonContext(courseId: string, lessonId: string) {
-  const course = getCourse(courseId)
+function findLessonContext(collection: Course[], courseId: string, lessonId: string) {
+  const course = findCourse(collection, courseId)
   if (!course) return undefined
   const flat: { lesson: Lesson; moduleTitle: string }[] = []
   course.modules.forEach((m) => m.lessons.forEach((l) => flat.push({ lesson: l, moduleTitle: m.title })))
@@ -682,4 +826,28 @@ export function getLessonContext(courseId: string, lessonId: string) {
     prev: index > 0 ? flat[index - 1] : undefined,
     next: index < flat.length - 1 ? flat[index + 1] : undefined,
   }
+}
+
+export function getCourse(id: string) {
+  return findCourse(courses, id)
+}
+
+export function getFreeCourse(id: string) {
+  return findCourse(freeCourses, id)
+}
+
+export function getExam(examId: string) {
+  return findExam(courses, examId)
+}
+
+export function getFreeExam(examId: string) {
+  return findExam(freeCourses, examId)
+}
+
+export function getLessonContext(courseId: string, lessonId: string) {
+  return findLessonContext(courses, courseId, lessonId)
+}
+
+export function getFreeLessonContext(courseId: string, lessonId: string) {
+  return findLessonContext(freeCourses, courseId, lessonId)
 }

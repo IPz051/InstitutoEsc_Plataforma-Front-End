@@ -16,11 +16,11 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { AppNavbar } from "@/components/app-navbar"
 import { CourseCard } from "@/components/course-card"
 import { Progress } from "@/components/ui/progress"
-import { courses, inPersonCourses, type InPersonCourse } from "@/lib/mock-data"
+import { freeCourses, inPersonCourses, type InPersonCourse } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
 
 type Filter = "todos" | "em-andamento" | "concluido"
-type Tab = "online" | "presenciais"
+type Tab = "livres" | "presenciais"
 
 const filters: { id: Filter; label: string }[] = [
   { id: "em-andamento", label: "Em andamento" },
@@ -31,7 +31,7 @@ const filters: { id: Filter; label: string }[] = [
 const ITEMS_PER_PAGE = 3
 
 function getTabFromSearchParams(selectedTab: string | null): Tab {
-  return selectedTab === "presenciais" ? "presenciais" : "online"
+  return selectedTab === "presenciais" ? "presenciais" : "livres"
 }
 
 export default function CoursesPage() {
@@ -60,7 +60,7 @@ function CoursesPageContent() {
     router.replace(`/cursos?${params.toString()}`)
   }
 
-  const filtered = courses.filter((c) => {
+  const filtered = freeCourses.filter((c) => {
     if (filter === "todos") return true
     return c.status === filter
   })
@@ -84,21 +84,21 @@ function CoursesPageContent() {
 
   return (
     <>
-      <AppNavbar title="Meus Cursos" />
+      <AppNavbar title="Cursos" />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <div className="flex flex-wrap items-center gap-2 rounded-full bg-white p-1.5 shadow-sm ring-1 ring-[#e7ecff]">
           <button
             type="button"
-            onClick={() => handleTabChange("online")}
+            onClick={() => handleTabChange("livres")}
             className={cn(
               "inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors",
-              tab === "online"
+              tab === "livres"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Layers className="h-4 w-4" />
-            Formação online
+            Cursos Livres
           </button>
           <button
             type="button"
@@ -111,18 +111,18 @@ function CoursesPageContent() {
             )}
           >
             <Users className="h-4 w-4" />
-            Cursos presenciais
+            Cursos Presenciais
           </button>
         </div>
 
-        {tab === "online" ? (
+        {tab === "livres" ? (
           <>
             <div className="flex flex-wrap gap-2">
               {filters.map((f) => {
                 const count =
                   f.id === "todos"
-                    ? courses.length
-                    : courses.filter((c) => c.status === f.id).length
+                    ? freeCourses.length
+                    : freeCourses.filter((c) => c.status === f.id).length
                 return (
                   <button
                     key={f.id}
@@ -185,7 +185,7 @@ function CoursesPageContent() {
                       <div key={index} className="w-full shrink-0">
                         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                           {group.map((course) => (
-                            <CourseCard key={course.id} course={course} />
+                            <CourseCard key={course.id} course={course} basePath="/cursos" />
                           ))}
                         </div>
                       </div>
@@ -217,15 +217,12 @@ function CoursesPageContent() {
 function CoursesPageFallback() {
   return (
     <>
-      <AppNavbar title="Meus Cursos" />
+      <AppNavbar title="Cursos" />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <div className="h-13 rounded-full bg-white shadow-sm ring-1 ring-[#e7ecff]" />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div
-              key={index}
-              className="h-72 rounded-2xl bg-white shadow-sm ring-1 ring-[#e7ecff]"
-            />
+            <div key={index} className="h-72 rounded-2xl bg-white shadow-sm ring-1 ring-[#e7ecff]" />
           ))}
         </div>
       </div>

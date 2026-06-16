@@ -14,7 +14,13 @@ const statusConfig: Record<Course["status"], { label: string; className: string 
   },
 }
 
-export function CourseCard({ course }: { course: Course }) {
+export function CourseCard({
+  course,
+  basePath = "/cursos",
+}: {
+  course: Course
+  basePath?: string
+}) {
   const status = statusConfig[course.status]
   const cta =
     course.status === "nao-iniciado"
@@ -25,7 +31,7 @@ export function CourseCard({ course }: { course: Course }) {
 
   return (
     <Link
-      href={`/cursos/${course.id}`}
+      href={`${basePath}/${course.id}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-accent/40 hover:shadow-lg"
     >
       <div className="relative aspect-video overflow-hidden bg-primary">
