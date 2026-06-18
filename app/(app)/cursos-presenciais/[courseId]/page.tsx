@@ -76,7 +76,8 @@ export default async function InPersonCoursePage({
               fill
               priority
               sizes="(min-width: 768px) 33vw, 100vw"
-              className="object-contain"
+              className="object-cover"
+              style={{ objectPosition: meta?.heroPosition ?? "center" }}
             />
           </div>
         </section>

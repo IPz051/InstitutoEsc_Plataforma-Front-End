@@ -52,6 +52,7 @@ export interface Course {
 export interface InPersonCourse {
   thumbnail: string
   heroImage?: string
+  heroPosition?: string
   id: string
   title: string
   city: string
@@ -624,6 +625,7 @@ export const inPersonCourses: InPersonCourse[] = [
   {
     thumbnail: "/cursos%20presenciais/acidente%20de%20trabalho.png",
     heroImage: "/cursos%20presenciais/seguran%C3%A7a%20foto%20grande.jpeg",
+    heroPosition: "center 10%",
     id: "acidente-trabalho",
     title: "PPP e LTCAT na Aposentadoria Especial: Obtenção, Retificação e Impactos dos EPIs na Comprovação do Tempo Especial",
     city: "Florianópolis",
@@ -691,6 +693,7 @@ c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`
   {
     thumbnail: "/cursos%20presenciais/imersao%20teses.png",
     heroImage: "/cursos%20presenciais/Escrita%20foto%20grande.jpeg",
+    heroPosition: "",
     id: "teses-revisionais",
     title: "PRÁTICA: MANDADO DE SEGURANÇA EM MATÉRIA PREVIDENCIÁRIA",
     city: "Florianópolis",
