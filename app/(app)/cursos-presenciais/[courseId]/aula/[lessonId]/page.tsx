@@ -3,10 +3,7 @@ import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { AppNavbar } from "@/components/app-navbar"
 import { LessonView } from "@/components/lesson-view"
-import { inPersonCourses } from "@/lib/mock-data"
-
-const DEMO_VIDEO_URL =
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+import { getInPersonLessonContext } from "@/lib/mock-data"
 
 export default async function InPersonLessonPage({
   params,
@@ -14,47 +11,67 @@ export default async function InPersonLessonPage({
   params: Promise<{ courseId: string; lessonId: string }>
 }) {
   const { courseId, lessonId } = await params
-  const inPerson = inPersonCourses.find((c) => c.id === courseId)
-  if (!inPerson) notFound()
+  const context = getInPersonLessonContext(courseId, lessonId)
+  if (!context) notFound()
 
-  if (lessonId !== "demo") notFound()
-
-  const course = {
-    id: inPerson.id,
-    title: inPerson.title,
-    shortDescription: "Aula demonstrativa",
-    description:
-      "Conteúdo de demonstração para a área de cursos presenciais. Este vídeo é apenas uma prévia.",
-    professor: "Instituto ESC",
-    professorRole: "Demonstração",
-    workload: "10 min",
-    totalLessons: 1,
-    progress: 0,
-    status: "nao-iniciado" as const,
-    category: "Cursos presenciais",
-    thumbnail: "/placeholder.svg",
-    modules: [
+  const professorTagsByCourse = {
+    "acidente-trabalho": [
       {
-        id: "demo-mod-1",
-        title: "Aula demonstrativa",
-        lessons: [
-          {
-            id: "demo",
-            title: "Vídeo DEMO — demonstração",
-            duration: "10 min",
-            completed: false,
-            description:
-              "Assista a uma prévia do conteúdo para entender a experiência de aula dentro da plataforma.",
-            videoUrl: DEMO_VIDEO_URL,
-          },
-        ],
+        imageSrc: "/tags%20professores/Carlos%20Alberto/Carlos%20Alberto%20foto.png",
+        imageAlt: "Carlos Alberto Pereira de Castro",
+        name: "Carlos Alberto Pereira de Castro",
+        description:
+          "Juiz do Trabalho da 12ª Região (SC). Diretor de Relacionamento com o Direito do Trabalho do IBDP. Doutorando em Ciências Jurídicas pela Universidade Autónoma de Lisboa.",
+      },
+      {
+        imageSrc: "/tags%20professores/Jo%C3%A3o%20Batista/Jo%C3%A3o%20Batista%20foto.png",
+        imageAlt: "João Batista Lazzari",
+        name: "João Batista Lazzari",
+        description:
+          "Diretor de Processo Judicial Previdenciário do IBDP. Pós-doutor em Direito e Justiça Constitucional. Juiz Federal do TRF da 4ª Região (1996-2023). Coautor das obras: Manual de Direito Previdenciário, 29 ed. Forense, 2026, Prática Processual Previdenciária, 18 ed. Forense, 2026, dentre outras.",
       },
     ],
-  }
+    "teses-revisionais": [
+      {
+        imageSrc: "/tags%20professores/Marco%20Serau/Marco%20Serau%20-%20foto.png",
+        imageAlt: "Marco Serau",
+        name: "Marco Serau",
+        description:
+          "Advogado. Especialista em Direito Previdenciário. Presidente da Comissão de Direito Previdenciário Regime Próprio da OAB/SC. Membro consultor da Comissão Especial de Direito Previdenciário, da OAB Nacional. Diretor de Amicus Curiae do Instituto de Estudos Previdenciários - IEPREV.",
+      },
+    ],
+    "processo-judicial-previdenciario": [
+      {
+        imageSrc: "/tags%20professores/Lucas%20Alberton/Lucas%20Alberton.png",
+        imageAlt: "Lucas Alberton",
+        name: "Lucas Alberton",
+        description:
+          "Advogado Previdenciarista; Mestre em Direito; Especialista em Direito Previdenciário; Professor de Direito Processual Civil, Direito Previdenciário e Ética Profissional na Graduação e em Diversos Institutos de Pós Graduação;",
+      },
+    ],
+    "mandado-seguranca-imersao": [
+      {
+        imageSrc: "/tags%20professores/Carlos%20Alberto/Carlos%20Alberto%20foto.png",
+        imageAlt: "Carlos Alberto Pereira de Castro",
+        name: "Carlos Alberto Pereira de Castro",
+        description:
+          "Juiz do Trabalho da 12ª Região (SC). Diretor de Relacionamento com o Direito do Trabalho do IBDP. Doutorando em Ciências Jurídicas pela Universidade Autónoma de Lisboa.",
+      },
+      {
+        imageSrc: "/tags%20professores/Jo%C3%A3o%20Batista/Jo%C3%A3o%20Batista%20foto.png",
+        imageAlt: "João Batista Lazzari",
+        name: "João Batista Lazzari",
+        description:
+          "Diretor de Processo Judicial Previdenciário do IBDP. Pós-doutor em Direito e Justiça Constitucional. Juiz Federal do TRF da 4ª Região (1996-2023). Coautor das obras: Manual de Direito Previdenciário, 29 ed. Forense, 2026, Prática Processual Previdenciária, 18 ed. Forense, 2026, dentre outras.",
+      },
+    ],
+  } as const
+
+  const professorTags = professorTagsByCourse[courseId as keyof typeof professorTagsByCourse]
 
   return (
     <div className="flex min-h-screen flex-col">
-      <AppNavbar title={inPerson.title} />
+      <AppNavbar title={context.course.title} />
       <div className="border-b border-border bg-card px-4 py-2 md:px-6">
         <Link
           href="/cursos?tipo=presenciais"
@@ -65,11 +82,13 @@ export default async function InPersonLessonPage({
         </Link>
       </div>
       <LessonView
-        course={course}
-        current={{ lesson: course.modules[0].lessons[0], moduleTitle: course.modules[0].title }}
+        course={context.course}
+        current={context.current}
+        prev={context.prev}
+        next={context.next}
         basePath="/cursos-presenciais"
+        professorTags={professorTags}
       />
     </div>
   )
 }
-

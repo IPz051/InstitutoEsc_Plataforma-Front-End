@@ -57,7 +57,11 @@ export default function LoginPage() {
               src={logoEsc}
               alt="Instituto ESC"
               fill
-              className="object-contain [filter:brightness(0)_invert(1)]"
+              className="object-contain"
+              style={{
+                filter:
+                  "brightness(0) saturate(100%) invert(79%) sepia(50%) saturate(1693%) hue-rotate(338deg) brightness(98%) contrast(95%)",
+              }}
               priority
             />
           </div>
@@ -71,18 +75,15 @@ export default function LoginPage() {
             Liderança, autoridade e resultados. Sempre juntos.
           </h2>
 
-          <div className="mt-10 max-w-md rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-sm">
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/5">
-                <span className="text-xs text-primary-foreground/70">Foto</span>
-              </div>
-              <div className="min-w-0">
-                <p className="font-heading text-base font-semibold">Comunidade ESC</p>
-                <p className="mt-0.5 text-sm text-primary-foreground/75">
-                  Advogados previdenciaristas ativos
-                </p>
-              </div>
-            </div>
+          <div className="mt-10 max-w-md overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm">
+            <Image
+              src="/card%20-%20login.png"
+              alt="Card Comunidade ESC"
+              width={440}
+              height={107}
+              className="h-auto w-full object-cover"
+              priority
+            />
           </div>
         </div>
 
@@ -98,6 +99,13 @@ export default function LoginPage() {
             <Users className="h-4 w-4" />
             PrevExperience
           </span>
+          <Image
+            src="/logos/Pr%C3%B3noia%20Logo%20BRANCO.png"
+            alt="Pronoia"
+            width={84}
+            height={29}
+            className="h-auto w-[84px] object-contain"
+          />
         </div>
       </section>
 

@@ -131,7 +131,7 @@ export default async function OnlineCoursePage({
                       </div>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-2 pb-2">
+                  <AccordionContent className="px-2 pb-2 [&_a]:no-underline">
                     <ul className="flex flex-col">
                       {module.lessons.map((lesson) => (
                         <li key={lesson.id}>

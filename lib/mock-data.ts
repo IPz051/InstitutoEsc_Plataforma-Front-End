@@ -50,14 +50,24 @@ export interface Course {
 }
 
 export interface InPersonCourse {
+  thumbnail: string
   id: string
   title: string
   city: string
   state: string
+  date: string
+  local: string
   month: string
   year: string
   status: "em-andamento" | "em-breve"
   track: string
+  area?: string
+  professors?: string[]
+  shortDescription?: string
+  description?: string
+  duration?: string
+  methodology?: string[]
+  demoLesson?: Lesson
   progress?: number
   completedLessons?: number
   totalLessons?: number
@@ -611,62 +621,243 @@ export const freeCourses: Course[] = [
 
 export const inPersonCourses: InPersonCourse[] = [
   {
+    thumbnail: "/cursos%20presenciais/acidente%20de%20trabalho.png",
     id: "acidente-trabalho",
-    title: "Acidente de Trabalho",
+    title: "PPP e LTCAT na Aposentadoria Especial: Obtenção, Retificação e Impactos dos EPIs na Comprovação do Tempo Especial",
     city: "Florianópolis",
     state: "SC",
+    date: "10 e 11/07/2026",
+    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
     month: "Mar",
     year: "2026",
     status: "em-andamento",
     track: "Curso presencial",
-    progress: 50,
-    completedLessons: 1,
-    totalLessons: 2,
+    area: "Direito do Trabalho e Direito Previdenciário ",
+    professors: ["Carlos Alberto Pereira de Castro", "João Batista Lazzari"],
+    shortDescription: "Aula demonstrativa",
+    description:
+      "O curso examina, de forma prática e atualizada, o papel do PPP e do LTCAT na comprovação do tempo especial para fins de aposentadoria especial, abordando tanto os aspectos trabalhistas quanto previdenciários envolvidos na produção e utilização dessa prova técnica.\nSerão analisados os caminhos jurídicos para obtenção, retificação e impugnação do PPP, inclusive por meio de ação na Justiça do Trabalho, bem como os reflexos desses documentos no reconhecimento do tempo especial perante o INSS e no processo judicial previdenciário. O curso também examina a jurisprudência recente dos Tribunais Superiores sobre a eficácia dos Equipamentos de Proteção Individual (EPIs), com destaque para os precedentes vinculantes do STF e do STJ.\nA partir da experiência dos professores e da análise de casos concretos e estratégias processuais, os participantes terão contato com técnicas de atuação profissional voltadas à construção da prova do tempo especial e à condução de demandas previdenciárias envolvendo aposentadoria especial. Indicado para advogados, servidores públicos, peritos, contadores e estudantes que desejam aprofundar o conhecimento sobre prova técnica e litigância estratégica no campo do Direito Previdenciário.",
+    duration: "11 horas",
+    methodology: [
+      `CONTEUDO PROGRAMATICO
+
+PARTE I - Prof. Carlos Alberto Pereira de Castro
+EMENTA: PPP/LTCAT: PRODUCAO DA PROVA E ASPECTOS TRABALHISTAS
+1) Comprovacao da atividade especial: conceitos e fundamentos normativos
+2) Prova pericial: modalidades (indireta, por similaridade e banco de laudos)
+3) Acao na Justica do Trabalho para obtencao e retificacao do PPP e do LCTA:
+a) Cabimento e fundamentos juridicos
+b) Prazos e procedimento
+c) Estrutura da peticao inicial
+d) Producao de provas, com enfase na prova pericial
+e) Efeitos da decisao judicial sobre o PPP e o LTCAT
+4) Interferencia da Aposentadoria Especial no contrato de trabalho
+
+PARTE II - Prof. Joao Batista Lazzari
+EMENTA: TEMPO ESPECIAL: ASPECTOS PREVIDENCIARIOS
+1) Reconhecimento do tempo especial e seus efeitos praticos
+2) Jurisprudencia e evolucao normativa sobre o tema
+3) Questoes controvertidas:
+a) atividades perigosas STF Tema 1209 (vigilantes)
+b) eletricitarios, frentistas, etc.
+c) atividades penosas (motorista de onibus e de caminhao)
+4) Equipamentos de Protecao Individual - EPIs na jurisprudencia previdenciaria:
+a) STF Repercussao Geral Tema 555 do STF
+b) STJ Repetitivo Tema 1090
+c) TRF/4 IRDR Tema 15
+d) TNU - Representativo de Controversia Tema 213
+5) Estrategias processuais na acao previdenciaria para descaracterizar os efeitos do EPI a luz das teses fixadas no Tema 1090 do STJ
+
+PARTE III - Professores Carlos Alberto de Castro e Joao Batista Lazzari
+a) Casos concretos de obtencao e revisao de PPP na Justica do Trabalho
+b) Casos concretos com analise de provas em Acoes Previdenciarias
+c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`,
+    ],
+    demoLesson: {
+      id: "demo",
+      title: "Abertura e orientações",
+      duration: "10 min",
+      completed: false,
+      description:
+        "Apresentação do curso presencial e orientações gerais sobre a experiência dentro da plataforma.",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    },
+    progress: 0,
+    completedLessons: 0,
+    totalLessons: 1,
   },
   {
+    thumbnail: "/cursos%20presenciais/imersao%20teses.png",
     id: "teses-revisionais",
-    title: "Imersão em Teses Revisionais",
+    title: "PRÁTICA: MANDADO DE SEGURANÇA EM MATÉRIA PREVIDENCIÁRIA",
     city: "Florianópolis",
     state: "SC",
-    month: "Mai",
+    date: "A previsão inicial é para que o curso ocorra das 9h às 18h, com paradas para intervalo e almoço.",
+    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
+    month: "Jul",
     year: "2026",
     status: "em-andamento",
     track: "Curso presencial",
-    progress: 50,
-    completedLessons: 1,
-    totalLessons: 2,
+    area: "Direito Previdenciário",
+    professors: ["Marco Aurélio Serau Junior"],
+    shortDescription: "Aula demonstrativa",
+    description:
+      `• Conceito
+• Mandado de Segurança na Constituição Federal
+• Direito líquido e certo
+• Abuso de direito e ilegalidade
+• Autoridade coatora
+• Mandado de segurança individual e coletivo
+• Mandado de segurança preventivo e repressivo
+• Rito Processual (Lei 12.016/2009)
+• Competência
+• Liminar
+• Hipóteses de não cabimento de mandado de segurança
+• Recursos cabíveis
+• Mandado de segurança nos Juizados Especiais Federais
+• Jurisprudência do STF e STJ sobre mandado de segurança`,
+    duration: "8 horas",
+    methodology: [
+      "Encaminhamento de material de leitura prévia aos alunos, para compreensão inicial da matéria.",
+      "Exposição do conteúdo programático através da solução de casos concretos.",
+    ],
+    demoLesson: {
+      id: "demo",
+      title: "Abertura e orientações",
+      duration: "10 min",
+      completed: false,
+      description:
+        "Apresentação do curso presencial e orientações gerais sobre a experiência dentro da plataforma.",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    },
+    progress: 0,
+    completedLessons: 0,
+    totalLessons: 1,
   },
   {
+    thumbnail: "/cursos%20presenciais/imersao%20em%20processo.png",
     id: "processo-judicial-previdenciario",
-    title: "Imersão em Processo Judicial Previdenciário",
+    title: "PRÁTICA: TESES REVISIONAIS APLICÁVEIS AOS BENEFÍCIOS NÃO PROGRAMÁVEIS DO RGPS (BENEFÍCIOS POR INCAPACIDADE / PENSÃO POR MORTE) APÓS A REFORMA DA PREVIDÊNCIA (EC N. 103/2019)",
     city: "Curitiba",
     state: "PR",
+    date: "10 e 11/07/2026",
+    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
     month: "Jul",
     year: "2026",
     status: "em-breve",
     track: "Curso presencial",
+    area: "Direito Previdenciário",
+    professors: ["Lucas Alberton"],
+    shortDescription: "Aula demonstrativa",
+    description:
+      `• Recálculo da Aposentadoria por Incapacidade Permanente / Pensão por Morte, pela técnica de descarte de contribuições
+• O tempo de convivência do casal, seja de casamento, seja de união estável, com ou sem solução de continuidade na relação, como requisito para manutenção da pensão por morte no RGPS`,
+    duration: "4 horas",
+    methodology: [
+      "Exposição do conteúdo programático através da solução de casos concretos.",
+      "Encaminhamento de modelos das teses para aplicação na prática previdenciária.",
+    ],
+    demoLesson: {
+      id: "demo",
+      title: "Abertura e orientações",
+      duration: "10 min",
+      completed: false,
+      description:
+        "Apresentação do curso presencial e orientações gerais sobre a experiência dentro da plataforma.",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    },
     availableLabel: "Disponível em Jul 2026",
   },
   {
-    id: "recurso-extraordinario",
-    title: "Imersão Prática em Recurso Extraordinário",
-    city: "São Paulo",
-    state: "SP",
-    month: "Set",
-    year: "2026",
-    status: "em-breve",
-    track: "Curso presencial",
-    availableLabel: "Disponível em Set 2026",
-  },
-  {
+    thumbnail: "/cursos%20presenciais/imersao%20em%20mandado.png",
     id: "mandado-seguranca-imersao",
-    title: "Imersão em Mandado de Segurança",
+    title: "Aposentadoria Especial na Prática : Domine PPP, LTCAT e a Prova do Tempo Especial",
     city: "Florianópolis",
     state: "SC",
+    date: "10 e 11/07/2026",
+    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
     month: "Nov",
     year: "2026",
     status: "em-breve",
     track: "Curso presencial",
+    area: "Direito Previdenciário",
+    professors: ["Carlos Alberto Pereira de Castro", "João Batista Lazzari"],
+    shortDescription: "Aula demonstrativa",
+    description:
+      `Grande parte das ações envolvendo aposentadoria especial não depende apenas da existência do direito, mas da qualidade da prova técnica apresentada.
+
+Na prática profissional, são frequentes situações como:
+• PPP incompleto ou preenchido incorretamente
+• ausência ou inconsistência do LTCAT
+• divergências quanto ao uso e à eficácia dos Equipamentos de Proteção Individual (EPIs)
+• dificuldades na produção de prova pericial adequada
+
+Esses problemas exigem do advogado uma atuação estratégica que envolve simultaneamente aspectos trabalhistas e previdenciários, bem como conhecimento da jurisprudência atual dos Tribunais Superiores.
+
+Este curso foi estruturado para oferecer uma visão integrada e prática sobre a prova do tempo especial, permitindo ao profissional atuar com maior segurança na condução de demandas envolvendo aposentadoria especial.
+
+O QUE VOCE VAI APRENDER
+✔ fundamentos jurídicos da comprovação da atividade especial
+✔ utilização técnica do PPP e do LTCAT na prova previdenciária
+✔ estratégias para obtenção e retificação do PPP por meio de ação trabalhista
+✔ modalidades de prova pericial aplicadas ao tempo especial
+✔ interpretação da jurisprudência atual do STF, STJ e tribunais regionais
+✔ discussão jurídica sobre eficácia dos EPIs
+✔ estratégias processuais na condução de ações previdenciárias envolvendo aposentadoria especial
+
+PARA QUEM ESTE CURSO E INDICADO
+Este curso é direcionado a profissionais que atuam ou desejam atuar com aposentadoria especial, especialmente:
+• advogados previdenciaristas
+• advogados trabalhistas
+• servidores públicos
+• peritos judiciais
+• contadores
+• estudantes de Direito interessados no tema`,
+    duration: "11 horas",
+    methodology: [
+      `Estrutura do Curso
+
+Modulo 1
+PPP e LTCAT: producao da prova e aspectos trabalhistas
+Professor: Carlos Alberto Pereira de Castro
+• fundamentos da comprovacao da atividade especial
+• modalidades de prova pericial (direta, indireta e por similaridade)
+• acao na Justica do Trabalho para obtencao ou retificacao do PPP
+• fundamentos juridicos e cabimento da acao
+• estrutura da peticao inicial
+• producao de prova pericial
+• efeitos da decisao judicial sobre PPP e LTCAT
+• interferencia da aposentadoria especial no contrato de trabalho`,
+      `Modulo 2
+Tempo especial: aspectos previdenciarios
+Professor: Joao Batista Lazzari
+• reconhecimento do tempo especial e seus efeitos
+• evolucao normativa e jurisprudencial
+• atividades perigosas e penosas
+• analise de categorias profissionais (vigilantes, eletricitarios, frentistas etc.)
+Equipamentos de Protecao Individual na jurisprudencia previdenciaria:
+• Tema 555 do STF
+• Tema 1090 do STJ
+• IRDR 15 do TRF4
+• Tema 213 da TNU
+• estrategias processuais para descaracterizacao da eficacia do EPI`,
+      `Modulo 3
+Oficina pratica
+Atividade conduzida pelos dois professores com analise de situacoes concretas:
+• casos reais de obtencao e revisao de PPP na Justica do Trabalho
+• analise de prova tecnica em acoes previdenciarias
+• orientacoes praticas para elaboracao de peticoes
+• integracao entre estrategias trabalhistas e previdenciarias`,
+    ],
+    demoLesson: {
+      id: "demo",
+      title: "Abertura e orientações",
+      duration: "10 min",
+      completed: false,
+      description:
+        "Apresentação do curso presencial e orientações gerais sobre a experiência dentro da plataforma.",
+      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    },
     availableLabel: "Disponível em Nov 2026",
   },
 ]
@@ -850,4 +1041,63 @@ export function getLessonContext(courseId: string, lessonId: string) {
 
 export function getFreeLessonContext(courseId: string, lessonId: string) {
   return findLessonContext(freeCourses, courseId, lessonId)
+}
+
+export function getInPersonCourse(id: string) {
+  const inPerson = inPersonCourses.find((course) => course.id === id)
+  if (!inPerson) return undefined
+
+  const demoLesson: Lesson = {
+    id: inPerson.demoLesson?.id ?? "demo",
+    title: inPerson.demoLesson?.title ?? "Vídeo DEMO — demonstração",
+    duration: inPerson.demoLesson?.duration ?? "10 min",
+    completed: false,
+    description:
+      inPerson.demoLesson?.description ??
+      "Assista a uma prévia do conteúdo para entender a experiência de aula dentro da plataforma.",
+    videoUrl:
+      inPerson.demoLesson?.videoUrl ??
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+  }
+
+  const modulesWithCompletion: Module[] = [
+    {
+      id: `${inPerson.id}-demo`,
+      title: "Vídeo DEMO",
+      lessons: [demoLesson],
+    },
+  ]
+
+  return {
+    id: inPerson.id,
+    title: inPerson.title,
+    shortDescription: inPerson.shortDescription ?? "Aula demonstrativa",
+    description:
+      inPerson.description ??
+      "Conteúdo de demonstração para a área de cursos presenciais. Este vídeo é apenas uma prévia.",
+    professor: inPerson.professors?.join(", ") ?? "Instituto ESC",
+    professorRole: inPerson.area ?? "Curso presencial",
+    workload: inPerson.duration ?? "—",
+    totalLessons: 1,
+    progress: 0,
+    status: inPerson.status === "em-andamento" ? "em-andamento" : ("nao-iniciado" as const),
+    category: "Cursos presenciais",
+    thumbnail: inPerson.thumbnail,
+    modules: modulesWithCompletion,
+  }
+}
+
+export function getInPersonLessonContext(courseId: string, lessonId: string) {
+  const course = getInPersonCourse(courseId)
+  if (!course) return undefined
+  const flat: { lesson: Lesson; moduleTitle: string }[] = []
+  course.modules.forEach((m) => m.lessons.forEach((l) => flat.push({ lesson: l, moduleTitle: m.title })))
+  const index = flat.findIndex((f) => f.lesson.id === lessonId)
+  if (index === -1) return undefined
+  return {
+    course,
+    current: flat[index],
+    prev: index > 0 ? flat[index - 1] : undefined,
+    next: index < flat.length - 1 ? flat[index + 1] : undefined,
+  }
 }

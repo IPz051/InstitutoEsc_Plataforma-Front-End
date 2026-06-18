@@ -14,6 +14,8 @@ import {
   ListVideo,
   X,
 } from "lucide-react"
+import { ProfessorCardsSection } from "@/components/professor-cards-section"
+import type { ProfessorTag } from "@/components/professor-tag-card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
@@ -31,12 +33,14 @@ export function LessonView({
   prev,
   next,
   basePath = "/cursos",
+  professorTags,
 }: {
   course: Course
   current: { lesson: Lesson; moduleTitle: string }
   prev?: { lesson: Lesson; moduleTitle: string }
   next?: { lesson: Lesson; moduleTitle: string }
   basePath?: string
+  professorTags?: ProfessorTag[]
 }) {
   const [playing, setPlaying] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -127,18 +131,9 @@ export function LessonView({
                 </Link>
               </Button>
             ) : (
-              <Button asChild size="sm">
-                <Link href={`${basePath}/${course.id}`}>Concluir módulo</Link>
-              </Button>
+              <span />
             )}
           </div>
-
-          <section>
-            <h2 className="font-heading text-base font-semibold text-foreground">Descrição</h2>
-            <p className="mt-2 text-pretty leading-relaxed text-muted-foreground">
-              {current.lesson.description}
-            </p>
-          </section>
 
           {/* Material complementar */}
           <section>
@@ -165,6 +160,8 @@ export function LessonView({
               ))}
             </div>
           </section>
+
+          {professorTags?.length ? <ProfessorCardsSection professors={professorTags} /> : null}
         </div>
       </div>
 

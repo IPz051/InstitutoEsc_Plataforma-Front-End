@@ -2,11 +2,11 @@
 
 import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  ImageIcon,
   Layers,
   Lock,
   MapPin,
@@ -235,18 +235,20 @@ function InPersonCourseCard({ course }: { course: InPersonCourse }) {
 
   return (
     <Link
-      href={`/cursos-presenciais/${course.id}/aula/demo`}
+      href={`/cursos-presenciais/${course.id}`}
       className="block overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-[#e7ecff] transition-all hover:shadow-md"
     >
       <div className="relative border-b border-dashed border-[#cfd8ff] bg-[#fbfcff]">
         <div className="absolute left-4 top-3 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-primary ring-1 ring-[#e7ecff]">
           {isAvailable ? "Em andamento" : "Em breve"}
         </div>
-        <div className="flex h-30 items-center justify-center border-x border-dashed border-[#cfd8ff]">
-          <div className="flex flex-col items-center text-center text-muted-foreground">
-            <ImageIcon className="h-6 w-6" />
-            <span className="mt-3 max-w-[180px] text-sm">{course.title}</span>
-          </div>
+        <div className="relative h-30 overflow-hidden border-x border-dashed border-[#cfd8ff]">
+          <Image
+            src={course.thumbnail || "/placeholder.svg"}
+            alt={course.title}
+            fill
+            className="object-cover"
+          />
         </div>
       </div>
 
@@ -268,6 +270,12 @@ function InPersonCourseCard({ course }: { course: InPersonCourse }) {
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">
             {course.track} • {course.city}-{course.state}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Data:</span> {course.date}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Local:</span> {course.local}
           </p>
         </div>
 
