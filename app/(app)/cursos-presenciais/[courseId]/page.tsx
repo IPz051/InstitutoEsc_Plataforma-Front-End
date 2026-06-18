@@ -1,8 +1,10 @@
+import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, CalendarDays, Clock3, GraduationCap, MapPin, PlayCircle, Users } from "lucide-react"
 import { AppNavbar } from "@/components/app-navbar"
 import { ExpandableText } from "@/components/expandable-text"
+import { ProfessorTagCard } from "@/components/professor-tag-card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -11,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { getInPersonProfessorTags } from "@/lib/in-person-professor-tags"
 import { getInPersonCourse, inPersonCourses } from "@/lib/mock-data"
 
 export default async function InPersonCoursePage({
@@ -22,6 +25,7 @@ export default async function InPersonCoursePage({
   const course = getInPersonCourse(courseId)
   if (!course) notFound()
   const meta = inPersonCourses.find((c) => c.id === courseId)
+  const professorTags = getInPersonProfessorTags(courseId)
   const firstLessonId = course.modules[0]?.lessons[0]?.id ?? "demo"
 
   return (
@@ -65,29 +69,15 @@ export default async function InPersonCoursePage({
             </Button>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-xl bg-secondary/50 p-6">
-            <p className="font-heading text-sm font-semibold text-foreground">Resumo do curso</p>
-            <div className="flex items-start gap-2 text-sm text-foreground">
-              <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-              <div>
-                <p className="font-medium">Matéria / Área do direito</p>
-                <p className="text-muted-foreground">{meta?.area ?? "A definir"}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2 text-sm text-foreground">
-              <Users className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-              <div>
-                <p className="font-medium">Professores</p>
-                <p className="text-muted-foreground">{meta?.professors?.join(", ") ?? "A definir"}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2 text-sm text-foreground">
-              <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-              <div>
-                <p className="font-medium">Duração</p>
-                <p className="text-muted-foreground">{meta?.duration ?? "A definir"}</p>
-              </div>
-            </div>
+          <div className="relative min-h-[280px] overflow-hidden rounded-xl bg-secondary/50">
+            <Image
+              src={course.thumbnail}
+              alt={`Imagem representativa do curso ${course.title}`}
+              fill
+              priority
+              sizes="(min-width: 768px) 33vw, 100vw"
+              className="object-contain"
+            />
           </div>
         </section>
 
@@ -130,11 +120,22 @@ export default async function InPersonCoursePage({
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
-                <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
-                  {(meta?.professors?.length ? meta.professors : ["A definir"]).map((professor) => (
-                    <li key={professor}>{professor}</li>
-                  ))}
-                </ul>
+                {professorTags?.length ? (
+                  <div className="flex flex-col gap-3">
+                    {professorTags.map((professor) => (
+                      <ProfessorTagCard
+                        key={`${professor.name}-${professor.imageSrc}`}
+                        professor={professor}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+                    {(meta?.professors?.length ? meta.professors : ["A definir"]).map((professor) => (
+                      <li key={professor}>{professor}</li>
+                    ))}
+                  </ul>
+                )}
               </AccordionContent>
             </AccordionItem>
 

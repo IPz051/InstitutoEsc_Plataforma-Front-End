@@ -51,6 +51,7 @@ export interface Course {
 
 export interface InPersonCourse {
   thumbnail: string
+  heroImage?: string
   id: string
   title: string
   city: string
@@ -622,6 +623,7 @@ export const freeCourses: Course[] = [
 export const inPersonCourses: InPersonCourse[] = [
   {
     thumbnail: "/cursos%20presenciais/acidente%20de%20trabalho.png",
+    heroImage: "/cursos%20presenciais/seguran%C3%A7a%20foto%20grande.jpeg",
     id: "acidente-trabalho",
     title: "PPP e LTCAT na Aposentadoria Especial: Obtenção, Retificação e Impactos dos EPIs na Comprovação do Tempo Especial",
     city: "Florianópolis",
@@ -688,6 +690,7 @@ c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`
   },
   {
     thumbnail: "/cursos%20presenciais/imersao%20teses.png",
+    heroImage: "/cursos%20presenciais/Escrita%20foto%20grande.jpeg",
     id: "teses-revisionais",
     title: "PRÁTICA: MANDADO DE SEGURANÇA EM MATÉRIA PREVIDENCIÁRIA",
     city: "Florianópolis",
@@ -736,6 +739,7 @@ c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`
   },
   {
     thumbnail: "/cursos%20presenciais/imersao%20em%20processo.png",
+    heroImage: "/cursos%20presenciais/martelo%20foto%20grande.jpeg",
     id: "processo-judicial-previdenciario",
     title: "PRÁTICA: TESES REVISIONAIS APLICÁVEIS AOS BENEFÍCIOS NÃO PROGRAMÁVEIS DO RGPS (BENEFÍCIOS POR INCAPACIDADE / PENSÃO POR MORTE) APÓS A REFORMA DA PREVIDÊNCIA (EC N. 103/2019)",
     city: "Curitiba",
@@ -770,6 +774,7 @@ c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`
   },
   {
     thumbnail: "/cursos%20presenciais/imersao%20em%20mandado.png",
+    heroImage: "/cursos%20presenciais/acordo%20foto%20grande.jpeg",
     id: "mandado-seguranca-imersao",
     title: "Aposentadoria Especial na Prática : Domine PPP, LTCAT e a Prova do Tempo Especial",
     city: "Florianópolis",
@@ -1082,7 +1087,7 @@ export function getInPersonCourse(id: string) {
     progress: 0,
     status: inPerson.status === "em-andamento" ? "em-andamento" : ("nao-iniciado" as const),
     category: "Cursos presenciais",
-    thumbnail: inPerson.thumbnail,
+    thumbnail: inPerson.heroImage ?? inPerson.thumbnail,
     modules: modulesWithCompletion,
   }
 }
