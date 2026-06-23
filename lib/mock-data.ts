@@ -197,7 +197,7 @@ export const courses: Course[] = [
     progress: 50,
     status: "em-andamento",
     category: "Formação online",
-    thumbnail: "/courses/gestao-escritorio.png",
+    thumbnail: "/cursos%20livres/ChatGPT%20Image%20Jun%2017,%202026,%2002_18_10%20PM%201.png",
     modules: [
       {
         id: "com-mod1",
@@ -347,7 +347,7 @@ export const courses: Course[] = [
     progress: 0,
     status: "nao-iniciado",
     category: "Formação online",
-    thumbnail: "/courses/inteligencia-emocional.png",
+    thumbnail: "/cursos%20livres/Produtividade%20Jur%C3%ADdica.png",
     modules: [
       {
         id: "tec-mod1",
@@ -491,7 +491,7 @@ export const freeCourses: Course[] = [
     progress: 33,
     status: "em-andamento",
     category: "Curso livre",
-    thumbnail: "/courses/gestao-escritorio.png",
+    thumbnail: "/cursos%20livres/ChatGPT%20Image%20Jun%2017,%202026,%2002_18_10%20PM%201.png",
     modules: [
       {
         id: "mj-mod1",
@@ -538,7 +538,7 @@ export const freeCourses: Course[] = [
     progress: 0,
     status: "nao-iniciado",
     category: "Curso livre",
-    thumbnail: "/courses/inteligencia-emocional.png",
+    thumbnail: "/cursos%20livres/Produtividade%20Jur%C3%ADdica.png",
     modules: [
       {
         id: "pj-mod1",
@@ -585,7 +585,7 @@ export const freeCourses: Course[] = [
     progress: 100,
     status: "concluido",
     category: "Curso livre",
-    thumbnail: "/courses/pericia-medica.png",
+    thumbnail: "/cursos%20livres/Atendimento%20Humanizado.png",
     modules: [
       {
         id: "ah-mod1",
