@@ -1,18 +1,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import { BookOpen, ArrowRight } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import type { Course } from "@/lib/mock-data"
-
-const statusConfig: Record<Course["status"], { label: string; className: string }> = {
-  "em-andamento": { label: "Em andamento", className: "bg-accent/10 text-accent border-accent/20" },
-  concluido: { label: "Concluído", className: "bg-gold/15 text-gold-foreground border-gold/30" },
-  "nao-iniciado": {
-    label: "Não iniciado",
-    className: "bg-muted text-muted-foreground border-border",
-  },
-}
 
 export function CourseCard({
   course,
@@ -21,7 +11,6 @@ export function CourseCard({
   course: Course
   basePath?: string
 }) {
-  const status = statusConfig[course.status]
   const cta =
     course.status === "nao-iniciado"
       ? "Começar curso"
@@ -41,12 +30,6 @@ export function CourseCard({
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <Badge
-          variant="outline"
-          className={`absolute left-3 top-3 ${status.className}`}
-        >
-          {status.label}
-        </Badge>
       </div>
 
       <div className="flex flex-1 flex-col p-4">
