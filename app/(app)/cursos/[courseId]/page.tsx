@@ -105,7 +105,7 @@ export default async function CoursePage({
             Conteúdo do curso
           </h3>
           <Accordion
-            type={"multiple" as const}
+            type="multiple"
             defaultValue={course.modules.map((m) => m.id)}
             className="flex flex-col gap-3"
           >

@@ -9,6 +9,7 @@ import {
   Award,
   Calendar,
   Users,
+  ShieldCheck,
   Globe,
   SunMedium,
   LogOut,
@@ -54,6 +55,7 @@ const navItems: NavItem[] = [
   { title: "Certificados", href: "/certificados", icon: Award },
   { title: "Calendário", href: "/calendario", icon: Calendar },
   { title: "Comunidade ESC", href: "/comunidade", icon: Users },
+  { title: "Painel Admin", href: "/admin", icon: ShieldCheck },
   { title: "PrevSummit Internacional", href: "/prevsummit-internacional", icon: Globe },
   { title: "Sunset Prev", href: "/sunset-prev", icon: SunMedium },
 ]

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import {
   PlayCircle,
@@ -12,6 +12,7 @@ import {
   FileDown,
   Play,
   ListVideo,
+  MessageSquare,
   X,
 } from "lucide-react"
 import { ProfessorCardsSection } from "@/components/professor-cards-section"
@@ -26,6 +27,12 @@ const materials = [
   { name: "Modelo de petição.docx", size: "180 KB" },
   { name: "Jurisprudência comentada.pdf", size: "1.1 MB" },
 ]
+
+type LessonQuestion = {
+  id: string
+  text: string
+  createdAt: string
+}
 
 export function LessonView({
   course,
@@ -44,12 +51,57 @@ export function LessonView({
 }) {
   const [playing, setPlaying] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [question, setQuestion] = useState("")
+  const [questionSent, setQuestionSent] = useState(false)
+  const [questionHistory, setQuestionHistory] = useState<LessonQuestion[]>([])
 
   const completed = course.modules.reduce(
     (acc, m) => acc + m.lessons.filter((l) => l.completed).length,
     0,
   )
   const progress = Math.round((completed / course.totalLessons) * 100)
+  const storageKey = useMemo(
+    () => `lesson-questions:${basePath}:${course.id}:${current.lesson.id}`,
+    [basePath, course.id, current.lesson.id],
+  )
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(storageKey)
+      setQuestionHistory(saved ? (JSON.parse(saved) as LessonQuestion[]) : [])
+    } catch {
+      setQuestionHistory([])
+    }
+    setQuestion("")
+    setQuestionSent(false)
+  }, [storageKey])
+
+  function handleQuestionSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!question.trim()) return
+
+    const nextQuestion: LessonQuestion = {
+      id: `${Date.now()}`,
+      text: question.trim(),
+      createdAt: new Date().toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    }
+
+    const updatedHistory = [nextQuestion, ...questionHistory]
+    setQuestionHistory(updatedHistory)
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(updatedHistory))
+    } catch {
+      // Ignore storage errors and keep the in-memory state.
+    }
+    setQuestionSent(true)
+    setQuestion("")
+  }
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
@@ -134,6 +186,76 @@ export function LessonView({
               <span />
             )}
           </div>
+            {/* Pg */}
+          <section className="rounded-2xl border border-border bg-card p-4 md:p-5">
+            <div className="flex flex-col gap-2">
+              <h2 className="font-heading text-base font-semibold text-foreground">
+                Perguntas sobre esta aula
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Envie sua duvida sobre o conteudo e registre o ponto exato que voce quer
+                esclarecer.
+              </p>
+            </div>
+
+            <form onSubmit={handleQuestionSubmit} className="mt-4 flex flex-col gap-3">
+              <textarea
+                value={question}
+                onChange={(e) => {
+                  setQuestion(e.target.value)
+                  if (questionSent) setQuestionSent(false)
+                }}
+                placeholder="Ex.: Na explicacao sobre a aula, fiquei com duvida sobre como aplicar esse ponto na pratica..."
+                rows={4}
+                className="min-h-28 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              />
+
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Sua pergunta fica vinculada a esta aula para acompanhamento posterior.
+                </p>
+                <Button type="submit" size="sm" disabled={!question.trim()}>
+                  Enviar pergunta
+                </Button>
+              </div>
+
+              {questionSent ? (
+                <div className="rounded-xl bg-secondary px-3 py-2 text-sm text-foreground">
+                  Pergunta enviada com sucesso. Voce pode continuar assistindo a aula enquanto
+                  aguardamos a resposta.
+                </div>
+              ) : null}
+            </form>
+
+            <div className="mt-5 border-t border-border pt-4">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-accent" />
+                <h3 className="font-heading text-sm font-semibold text-foreground">
+                  Historico de perguntas desta aula
+                </h3>
+              </div>
+
+              {questionHistory.length ? (
+                <div className="mt-3 flex flex-col gap-3">
+                  {questionHistory.map((item) => (
+                    <div key={item.id} className="rounded-xl bg-secondary/60 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-foreground">Pergunta enviada</p>
+                        <span className="text-xs text-muted-foreground">{item.createdAt}</span>
+                      </div>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {item.text}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-3 rounded-xl border border-dashed border-border px-3 py-4 text-sm text-muted-foreground">
+                  Nenhuma pergunta registrada nesta aula ainda.
+                </div>
+              )}
+            </div>
+          </section>
 
           {/* Material complementar */}
           <section>
