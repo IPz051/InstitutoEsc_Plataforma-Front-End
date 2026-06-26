@@ -155,17 +155,6 @@ export default function AdminPage() {
                 mais objetivo, com foco em leitura rápida e ações operacionais.
               </p>
             </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row xl:flex-col">
-              <Button variant="outline" className="justify-center">
-                <Download className="h-4 w-4" />
-                Exportar relatórios
-              </Button>
-              <Button className="justify-center">
-                <RefreshCw className="h-4 w-4" />
-                Atualizar dados
-              </Button>
-            </div>
           </div>
         </section>
 
@@ -193,8 +182,7 @@ export default function AdminPage() {
           ))}
         </section>
 
-        <section className="relative grid items-stretch gap-6 xl:grid-cols-2">
-          <div className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-[#e7ecff] xl:block" />
+        <section>
           <Card className="min-h-[360px] h-full rounded-3xl border-0 shadow-none ring-1 ring-[#e7ecff]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -248,49 +236,6 @@ export default function AdminPage() {
                     Títulos com tratativa aberta e potencial de recuperação imediata.
                   </p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="min-h-[360px] h-full rounded-3xl border-0 shadow-none ring-1 ring-[#e7ecff]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BellRing className="h-4 w-4 text-primary" />
-                Alertas operacionais
-              </CardTitle>
-              <CardDescription>
-                Itens que exigem ação rápida da equipe administrativa.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex h-full flex-col gap-3">
-              <div className="rounded-2xl bg-[#fff6f1] p-4 ring-1 ring-[#ffe0cc]">
-                <div className="flex items-center gap-2">
-                  <CircleAlert className="h-4 w-4 text-[#d97706]" />
-                  <p className="text-sm font-semibold text-foreground">9 documentos fora do prazo</p>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Priorize os envios pendentes para evitar bloqueio de matrícula.
-                </p>
-              </div>
-              <div className="rounded-2xl bg-[#f6f8ff] p-4 ring-1 ring-[#e7ecff]">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-semibold text-foreground">8 cobranças críticas</p>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Há títulos vencidos com mais de 10 dias aguardando tratativa.
-                </p>
-              </div>
-              <div className="rounded-2xl bg-[#f7fff6] p-4 ring-1 ring-[#d8f0d7]">
-                <div className="flex items-center gap-2">
-                  <FileCheck2 className="h-4 w-4 text-[#15803d]" />
-                  <p className="text-sm font-semibold text-foreground">
-                    3 relatórios mensais prontos para exportação
-                  </p>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Financeiro, documentos e evolução por turma já consolidados.
-                </p>
               </div>
             </CardContent>
           </Card>
