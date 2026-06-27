@@ -54,6 +54,7 @@
       "forgotPassword": "Esqueci minha senha",
       "submit": "Entrar",
       "submitting": "Entrando...",
+      "error": "E-mail ou senha inválidos. Tente novamente.",
       "prototypeNote": "Protótipo — use qualquer e-mail e senha para entrar"
     }
   },

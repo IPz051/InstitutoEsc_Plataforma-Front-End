@@ -1,4 +1,5 @@
 import axios from "axios"
+import { getAccessToken } from "@/lib/auth-tokens"
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080",
@@ -8,11 +9,9 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("accessToken")
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
+  const token = getAccessToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })

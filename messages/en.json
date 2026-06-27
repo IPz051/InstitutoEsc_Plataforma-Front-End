@@ -54,6 +54,7 @@
       "forgotPassword": "Forgot my password",
       "submit": "Sign in",
       "submitting": "Signing in...",
+      "error": "Invalid email or password. Please try again.",
       "prototypeNote": "Prototype — use any email and password to sign in"
     }
   },

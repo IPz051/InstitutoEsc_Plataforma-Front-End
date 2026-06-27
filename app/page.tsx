@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,24 +21,31 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuthStore } from "@/stores/authStore"
 import logoEsc from "@/public/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
 
 export default function LoginPage() {
   const router = useRouter()
   const t = useTranslations("auth.login")
   const tCommon = useTranslations("common")
+  const login = useAuthStore((s) => s.login)
+  const loading = useAuthStore((s) => s.isLoading)
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(true)
   const landingPageHref =
     process.env.NEXT_PUBLIC_LANDING_URL?.replace(/\/$/, "") ?? "http://localhost:3001"
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
-    setTimeout(() => router.push("/dashboard"), 800)
+    try {
+      await login({ email, password }, rememberMe)
+      router.push("/dashboard")
+    } catch {
+      // Backend returns 500 (not 401) for bad credentials — treat any failure as a failed login.
+      toast.error(t("error"))
+    }
   }
 
   return (
@@ -88,7 +96,6 @@ export default function LoginPage() {
             />
           </div>
         </div>
-
         <div className="relative z-10 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-primary-foreground/80">
           <span className="inline-flex items-center gap-2">
             <Layers className="h-4 w-4" />
@@ -186,24 +193,24 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              disabled={loading}
-              className="mt-1 w-full rounded-full bg-[#2F56D6] text-white hover:bg-[#274BC0]"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {t("submitting")}
-                </>
-              ) : (
-                <>
-                  {t("submit")} <ArrowRight className="h-4 w-4" />
-                </>
-              )}
-            </Button>
-          </form>
+              <Button
+                type="submit"
+                size="lg"
+                disabled={loading}
+                className="mt-1 w-full rounded-full bg-[#2F56D6] text-white hover:bg-[#274BC0]"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {t("submitting")}
+                  </>
+                ) : (
+                  <>
+                    {t("submit")} <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </form>
 
             <div className="mt-4 rounded-lg bg-muted/50 px-4 py-3 text-xs text-muted-foreground">
               {t("prototypeNote")}
