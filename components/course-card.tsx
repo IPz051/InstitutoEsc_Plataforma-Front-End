@@ -9,9 +9,11 @@ import type { Course } from "@/lib/mock-data"
 export function CourseCard({
   course,
   basePath = "/courses",
+  priority = false,
 }: {
   course: Course
   basePath?: string
+  priority?: boolean
 }) {
   const cta =
     course.status === "not-started"
@@ -31,6 +33,7 @@ export function CourseCard({
           alt={course.title}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
+          priority={priority}
         />
       </div>
 

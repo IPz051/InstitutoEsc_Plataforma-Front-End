@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/stores/authStore"
 import logoEsc from "@/public/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
+import pronoiaLogo from "@/public/logos/pronoia-logo-branco.png"
 
 export default function LoginPage() {
   const login = useAuthStore((s) => s.login)
@@ -87,7 +88,8 @@ export default function LoginPage() {
               alt="Card Comunidade ESC"
               width={440}
               height={107}
-              className="h-auto w-full object-cover"
+              className="w-full object-cover"
+              style={{ height: "auto" }}
               priority
             />
           </div>
@@ -105,11 +107,10 @@ export default function LoginPage() {
             PrevExperience
           </span>
           <Image
-            src="/logos/pronoia-logo-branco.png"
+            src={pronoiaLogo}
             alt="Pronoia"
-            width={84}
-            height={29}
-            className="h-auto w-[84px] object-contain"
+            className="w-[84px] object-contain"
+            style={{ height: "auto" }}
           />
         </div>
       </section>
