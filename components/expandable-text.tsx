@@ -1,16 +1,18 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { useTranslations } from "next-intl"
 
 export function ExpandableText({
   text,
-  label = "Descrição",
+  label,
   previewChars = 340,
 }: {
   text: string
   label?: string
   previewChars?: number
 }) {
+  const t = useTranslations("common")
   const [expanded, setExpanded] = useState(false)
 
   const previewText = useMemo(() => {
@@ -27,14 +29,14 @@ export function ExpandableText({
   return (
     <div className="mt-2">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label ?? t("description")}</p>
         {shouldTruncate ? (
           <button
             type="button"
             onClick={() => setExpanded((current) => !current)}
             className="text-sm font-medium text-accent transition-colors hover:text-accent/80"
           >
-            {expanded ? "Ler menos" : "Ler mais"}
+            {expanded ? t("readLess") : t("readMore")}
           </button>
         ) : null}
       </div>

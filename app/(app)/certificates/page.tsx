@@ -2,30 +2,32 @@
 
 import { Award, Download, Clock, CalendarCheck, Lock } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { AppNavbar } from "@/components/app-navbar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { certificates } from "@/lib/mock-data"
 
 export default function CertificatesPage() {
-  const issued = certificates.filter((c) => c.status === "emitido")
+  const t = useTranslations()
+  const issued = certificates.filter((c) => c.status === "issued")
 
   return (
     <>
-      <AppNavbar title="Certificados" />
+      <AppNavbar title={t("certificates.title")} />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <div className="flex flex-col gap-1">
           <h2 className="font-heading text-xl font-semibold text-foreground">
-            Seus certificados
+            {t("certificates.heading")}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {issued.length} certificados conquistados. Continue estudando para liberar novos.
+            {t("certificates.subtitle", { count: issued.length })}
           </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           {certificates.map((cert) => {
-            const emitido = cert.status === "emitido"
+            const isIssued = cert.status === "issued"
             return (
               <div
                 key={cert.id}
@@ -38,7 +40,7 @@ export default function CertificatesPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs uppercase tracking-wide text-primary-foreground/60">
-                      Certificado de Conclusão
+                      {t("certificates.completionCertificate")}
                     </p>
                     <h3 className="truncate font-heading text-base font-bold">
                       {cert.courseTitle}
@@ -54,40 +56,40 @@ export default function CertificatesPage() {
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-muted-foreground">
                       <CalendarCheck className="h-4 w-4" />
-                      {emitido ? `Emitido em ${cert.issueDate}` : "Aguardando conclusão"}
+                      {isIssued ? t("certificates.issuedOn", { date: cert.issueDate }) : t("certificates.waitingCompletion")}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    {emitido ? (
+                    {isIssued ? (
                       <Badge
                         variant="outline"
                         className="border-accent/20 bg-accent/10 text-accent"
                       >
-                        Emitido
+                        {t("enums.certificateStatus.issued")}
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-muted-foreground">
-                        Pendente
+                        {t("enums.certificateStatus.pending")}
                       </Badge>
                     )}
 
-                    {emitido ? (
+                    {isIssued ? (
                       <Button
                         size="sm"
                         onClick={() =>
-                          toast.success("Download iniciado", {
-                            description: `Certificado de ${cert.courseTitle}`,
+                          toast.success(t("certificates.downloadStarted"), {
+                            description: t("certificates.downloadDesc", { title: cert.courseTitle }),
                           })
                         }
                       >
                         <Download className="h-4 w-4" />
-                        Baixar
+                        {t("certificates.download")}
                       </Button>
                     ) : (
                       <Button size="sm" variant="outline" disabled>
                         <Lock className="h-4 w-4" />
-                        Indisponível
+                        {t("certificates.unavailable")}
                       </Button>
                     )}
                   </div>

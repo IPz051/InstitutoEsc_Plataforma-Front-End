@@ -6,6 +6,7 @@ import {
   FileText,
   ArrowRight,
 } from "lucide-react"
+import { getFormatter, getTranslations } from "next-intl/server"
 import { AppNavbar } from "@/components/app-navbar"
 import { CourseCard } from "@/components/course-card"
 import { ProgressRing } from "@/components/progress-ring"
@@ -18,9 +19,11 @@ import {
   calendarEvents,
 } from "@/lib/mock-data"
 
-export default function DashboardPage() {
-  const enrolled = courses.filter((c) => c.status !== "nao-iniciado")
-  const inProgress = courses.filter((c) => c.status === "em-andamento")
+export default async function DashboardPage() {
+  const t = await getTranslations()
+  const format = await getFormatter()
+  const enrolled = courses.filter((c) => c.status !== "not-started")
+  const inProgress = courses.filter((c) => c.status === "in-progress")
   const overall = Math.round(
     enrolled.reduce((acc, c) => acc + c.progress, 0) / enrolled.length,
   )
@@ -29,46 +32,43 @@ export default function DashboardPage() {
     (acc, c) => acc + Math.round((c.progress / 100) * c.totalLessons),
     0,
   )
-  const issuedCerts = certificates.filter((c) => c.status === "emitido")
+  const issuedCerts = certificates.filter((c) => c.status === "issued")
 
   const exams = calendarEvents
-    .filter((e) => e.type === "prova")
+    .filter((e) => e.type === "exam")
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 3)
   const events = calendarEvents
-    .filter((e) => e.type === "evento" || e.type === "aula")
+    .filter((e) => e.type === "event" || e.type === "lesson")
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 3)
 
   function formatDate(iso: string) {
-    return new Date(iso + "T00:00:00").toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-    })
+    return format.dateTime(new Date(iso + "T00:00:00"), { day: "2-digit", month: "short" })
   }
 
   const resumeCourse = inProgress[0] ?? enrolled[0]
 
   return (
     <>
-      <AppNavbar title="Dashboard" />
+      <AppNavbar title={t("dashboard.title")} />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <section className="flex flex-col gap-4 rounded-3xl bg-white p-6 ring-1 ring-[#e7ecff] md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
             <h2 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
-              Olá, {student.firstName}
+              {t("dashboard.greeting", { name: student.firstName })}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Você está no ritmo certo. Continue sua formação.
+              {t("dashboard.subtitle")}
             </p>
           </div>
 
           <div className="flex items-center gap-4 rounded-2xl bg-[#f6f8ff] px-4 py-3 ring-1 ring-[#e7ecff]">
             <ProgressRing value={overall} size={56} strokeWidth={8} />
             <div className="leading-tight">
-              <p className="text-sm font-semibold text-foreground">Sua formação</p>
+              <p className="text-sm font-semibold text-foreground">{t("dashboard.progressTitle")}</p>
               <p className="text-xs text-muted-foreground">
-                {completedLessons} de {totalLessons} aulas concluídas
+                {t("dashboard.lessonsCompleted", { completed: completedLessons, total: totalLessons })}
               </p>
             </div>
           </div>
@@ -76,7 +76,7 @@ export default function DashboardPage() {
 
         <section className="rounded-3xl bg-white p-5 ring-1 ring-[#e7ecff]">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
-            Continue de onde parou
+            {t("dashboard.continueLabel")}
           </p>
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-4">
@@ -85,18 +85,18 @@ export default function DashboardPage() {
               </div>
               <div className="min-w-0">
                 <p className="truncate font-heading text-base font-semibold text-foreground">
-                  {resumeCourse?.title ?? "Seu curso"}
+                  {resumeCourse?.title ?? t("dashboard.fallbackCourse")}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  Módulo 01 • {resumeCourse?.workload ?? "—"}
+                  {t("dashboard.moduleLabel", { workload: resumeCourse?.workload ?? "—" })}
                 </p>
               </div>
             </div>
             <Link
-              href={resumeCourse ? `/formacao-online/${resumeCourse.id}` : "/formacao-online"}
+              href={resumeCourse ? `/online-training/${resumeCourse.id}` : "/online-training"}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80"
             >
-              Continuar <ArrowRight className="h-4 w-4" />
+              {t("dashboard.continue")} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </section>
@@ -105,12 +105,12 @@ export default function DashboardPage() {
           {/* Progresso geral */}
           <Card className="lg:col-span-1 rounded-3xl ring-1 ring-[#e7ecff]">
             <CardHeader>
-              <CardTitle className="font-heading text-base">Progresso geral</CardTitle>
+              <CardTitle className="font-heading text-base">{t("dashboard.overallProgress")}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
-              <ProgressRing value={overall} sublabel="concluído" />
+              <ProgressRing value={overall} sublabel={t("dashboard.completedSublabel")} />
               <p className="text-center text-sm text-muted-foreground">
-                Média de conclusão dos seus {enrolled.length} cursos matriculados.
+                {t("dashboard.averageCompletion", { count: enrolled.length })}
               </p>
             </CardContent>
           </Card>
@@ -120,7 +120,7 @@ export default function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2 font-heading text-base">
                 <FileText className="h-4 w-4 text-accent" />
-                Próximas provas
+                {t("dashboard.upcomingExams")}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
@@ -148,13 +148,13 @@ export default function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2 font-heading text-base">
                 <CalendarDays className="h-4 w-4 text-accent" />
-                Próximos eventos
+                {t("dashboard.upcomingEvents")}
               </CardTitle>
               <Link
-                href="/calendario"
+                href="/calendar"
                 className="text-xs font-medium text-accent hover:underline"
               >
-                Ver tudo
+                {t("dashboard.seeAll")}
               </Link>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
@@ -187,19 +187,19 @@ export default function DashboardPage() {
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-heading text-lg font-semibold text-foreground">
-              Continue aprendendo
+              {t("dashboard.keepLearning")}
             </h3>
             <Link
-              href="/formacao-online"
+              href="/online-training"
               className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
             >
-              Ver todos os cursos
+              {t("dashboard.seeAllCourses")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {inProgress.map((course) => (
-              <CourseCard key={course.id} course={course} basePath="/formacao-online" />
+              <CourseCard key={course.id} course={course} basePath="/online-training" />
             ))}
           </div>
         </section>
@@ -208,13 +208,13 @@ export default function DashboardPage() {
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-heading text-lg font-semibold text-foreground">
-              Certificados conquistados
+              {t("dashboard.earnedCertificates")}
             </h3>
             <Link
-              href="/certificados"
+              href="/certificates"
               className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
             >
-              Ver todos
+              {t("dashboard.seeAllCerts")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -228,7 +228,7 @@ export default function DashboardPage() {
                   <div className="min-w-0">
                     <p className="truncate font-medium text-foreground">{cert.courseTitle}</p>
                     <p className="text-xs text-muted-foreground">
-                      Emitido em {cert.issueDate} • {cert.hours}
+                      {t("dashboard.issuedOn", { date: cert.issueDate, hours: cert.hours })}
                     </p>
                   </div>
                 </CardContent>

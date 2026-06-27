@@ -1,22 +1,26 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { BookOpen, ArrowRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Progress } from "@/components/ui/progress"
 import type { Course } from "@/lib/mock-data"
 
 export function CourseCard({
   course,
-  basePath = "/cursos",
+  basePath = "/courses",
 }: {
   course: Course
   basePath?: string
 }) {
+  const t = useTranslations()
   const cta =
-    course.status === "nao-iniciado"
-      ? "Começar curso"
-      : course.status === "concluido"
-        ? "Revisar curso"
-        : "Continuar curso"
+    course.status === "not-started"
+      ? t("courses.startCourse")
+      : course.status === "completed"
+        ? t("courses.reviewCourse")
+        : t("courses.continueCourse")
 
   return (
     <Link
@@ -43,14 +47,14 @@ export function CourseCard({
 
         <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
           <BookOpen className="h-3.5 w-3.5" />
-          <span>{course.totalLessons} aulas</span>
+          <span>{t("courses.lessonCount", { count: course.totalLessons })}</span>
           <span aria-hidden>•</span>
           <span>{course.workload}</span>
         </div>
 
         <div className="mt-auto pt-4">
           <div className="mb-1.5 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Progresso</span>
+            <span className="text-muted-foreground">{t("courses.progress")}</span>
             <span className="font-semibold text-foreground">{course.progress}%</span>
           </div>
           <Progress value={course.progress} />

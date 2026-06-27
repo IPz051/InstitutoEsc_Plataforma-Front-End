@@ -3,6 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import {
   Home,
   BookOpen,
@@ -31,37 +32,38 @@ import { student } from "@/lib/mock-data"
 import logoEsc from "@/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
 
 type NavItem = {
-  title: string
+  titleKey: string
   href: string
   icon: typeof Home
   isActive?: (pathname: string) => boolean
 }
 
 const navItems: NavItem[] = [
-  { title: "Início", href: "/dashboard", icon: Home },
+  { titleKey: "nav.home", href: "/dashboard", icon: Home },
   {
-    title: "Formação online",
-    href: "/formacao-online",
+    titleKey: "nav.onlineTraining",
+    href: "/online-training",
     icon: BookOpen,
-    isActive: (pathname) => pathname === "/formacao-online" || pathname.startsWith("/formacao-online/"),
+    isActive: (pathname) => pathname === "/online-training" || pathname.startsWith("/online-training/"),
   },
   {
-    title: "Cursos",
-    href: "/cursos",
+    titleKey: "nav.courses",
+    href: "/courses",
     icon: Users,
     isActive: (pathname) =>
-      pathname === "/cursos" || pathname.startsWith("/cursos/") || pathname.startsWith("/cursos-presenciais/"),
+      pathname === "/courses" || pathname.startsWith("/courses/") || pathname.startsWith("/in-person-courses/"),
   },
-  { title: "Certificados", href: "/certificados", icon: Award },
-  { title: "Calendário", href: "/calendario", icon: Calendar },
-  { title: "Comunidade ESC", href: "/comunidade", icon: Users },
-  { title: "Painel Admin", href: "/admin", icon: ShieldCheck },
-  { title: "PrevSummit Internacional", href: "/prevsummit-internacional", icon: Globe },
-  { title: "Sunset Prev", href: "/sunset-prev", icon: SunMedium },
+  { titleKey: "nav.certificates", href: "/certificates", icon: Award },
+  { titleKey: "nav.calendar", href: "/calendar", icon: Calendar },
+  { titleKey: "nav.community", href: "/community", icon: Users },
+  { titleKey: "nav.admin", href: "/admin", icon: ShieldCheck },
+  { titleKey: "nav.prevsummit", href: "/prevsummit-international", icon: Globe },
+  { titleKey: "nav.sunsetPrev", href: "/sunset-prev", icon: SunMedium },
 ]
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const t = useTranslations()
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -78,16 +80,17 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => {
                 const active = item.isActive ? item.isActive(pathname) : pathname === item.href || pathname.startsWith(item.href + "/")
+                const title = t(item.titleKey as Parameters<typeof t>[0])
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       isActive={active}
-                      tooltip={item.title}
+                      tooltip={title}
                       className="h-10 rounded-xl px-3"
                       render={<Link href={item.href} />}
                     >
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span>{title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
@@ -118,9 +121,9 @@ export function AppSidebar() {
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Sair" render={<Link href="/" />}>
+            <SidebarMenuButton tooltip={t("nav.signOut")} render={<Link href="/" />}>
               <LogOut className="h-4 w-4" />
-              <span>Sair</span>
+              <span>{t("nav.signOut")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from "next-intl"
 import { ProfessorTagCard, type ProfessorTag } from "@/components/professor-tag-card"
 
 export function ProfessorCardsSection({
@@ -5,6 +8,7 @@ export function ProfessorCardsSection({
 }: {
   professors: ProfessorTag[]
 }) {
+  const t = useTranslations()
   const validProfessors = professors.filter(
     (professor) =>
       professor.imageSrc?.trim() &&
@@ -17,7 +21,7 @@ export function ProfessorCardsSection({
 
   return (
     <section>
-      <h2 className="font-heading text-base font-semibold text-foreground">Professores</h2>
+      <h2 className="font-heading text-base font-semibold text-foreground">{t("courses.professors")}</h2>
       <div className="mt-3 flex flex-col gap-3">
         {validProfessors.map((professor) => (
           <ProfessorTagCard

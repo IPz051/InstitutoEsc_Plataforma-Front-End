@@ -3,14 +3,14 @@ import type { ProfessorTag } from "@/components/professor-tag-card"
 export const inPersonProfessorTagsByCourse: Partial<Record<string, ProfessorTag[]>> = {
   "acidente-trabalho": [
     {
-      imageSrc: "/tags%20professores/Carlos%20Alberto/Carlos%20Alberto%20foto.png",
+      imageSrc: "/professor-tags/carlos-alberto/carlos-alberto-foto.png",
       imageAlt: "Carlos Alberto Pereira de Castro",
       name: "Carlos Alberto Pereira de Castro",
       description:
         "Juiz do Trabalho da 12ª Região (SC). Diretor de Relacionamento com o Direito do Trabalho do IBDP. Doutorando em Ciências Jurídicas pela Universidade Autónoma de Lisboa.",
     },
     {
-      imageSrc: "/tags%20professores/Jo%C3%A3o%20Batista/Jo%C3%A3o%20Batista%20foto.png",
+      imageSrc: "/professor-tags/joao-batista/joao-batista-foto.png",
       imageAlt: "João Batista Lazzari",
       name: "João Batista Lazzari",
       description:
@@ -19,7 +19,7 @@ export const inPersonProfessorTagsByCourse: Partial<Record<string, ProfessorTag[
   ],
   "teses-revisionais": [
     {
-      imageSrc: "/tags%20professores/Marco%20Serau/Marco%20Serau%20-%20foto.png",
+      imageSrc: "/professor-tags/marco-serau/marco-serau-foto.png",
       imageAlt: "Marco Aurélio Serau Junior",
       name: "Marco Aurélio Serau Junior",
       description:
@@ -28,7 +28,7 @@ export const inPersonProfessorTagsByCourse: Partial<Record<string, ProfessorTag[
   ],
   "processo-judicial-previdenciario": [
     {
-      imageSrc: "/tags%20professores/Lucas%20Alberton/Lucas%20Alberton.png",
+      imageSrc: "/professor-tags/lucas-alberton/lucas-alberton.png",
       imageAlt: "Lucas Alberton",
       name: "Lucas Alberton",
       description:
@@ -37,14 +37,14 @@ export const inPersonProfessorTagsByCourse: Partial<Record<string, ProfessorTag[
   ],
   "mandado-seguranca-imersao": [
     {
-      imageSrc: "/tags%20professores/Carlos%20Alberto/Carlos%20Alberto%20foto.png",
+      imageSrc: "/professor-tags/carlos-alberto/carlos-alberto-foto.png",
       imageAlt: "Carlos Alberto Pereira de Castro",
       name: "Carlos Alberto Pereira de Castro",
       description:
         "Juiz do Trabalho da 12ª Região (SC). Diretor de Relacionamento com o Direito do Trabalho do IBDP. Doutorando em Ciências Jurídicas pela Universidade Autónoma de Lisboa.",
     },
     {
-      imageSrc: "/tags%20professores/Jo%C3%A3o%20Batista/Jo%C3%A3o%20Batista%20foto.png",
+      imageSrc: "/professor-tags/joao-batista/joao-batista-foto.png",
       imageAlt: "João Batista Lazzari",
       name: "João Batista Lazzari",
       description:

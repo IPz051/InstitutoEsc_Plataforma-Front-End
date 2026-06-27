@@ -1,4 +1,4 @@
-export type CourseStatus = "em-andamento" | "concluido" | "nao-iniciado"
+export type CourseStatus = "in-progress" | "completed" | "not-started"
 
 export interface Lesson {
   id: string
@@ -58,10 +58,10 @@ export interface InPersonCourse {
   city: string
   state: string
   date: string
-  local: string
+  venue: string
   month: string
   year: string
-  status: "em-andamento" | "em-breve"
+  status: "in-progress" | "coming-soon"
   track: string
   area?: string
   professors?: string[]
@@ -80,7 +80,7 @@ export interface Certificate {
   id: string
   courseTitle: string
   issueDate: string
-  status: "emitido" | "pendente"
+  status: "issued" | "pending"
   hours: string
 }
 
@@ -88,7 +88,7 @@ export interface CalendarEvent {
   id: string
   title: string
   date: string // ISO date
-  type: "aula" | "prova" | "evento"
+  type: "lesson" | "exam" | "event"
 }
 
 export interface CommunityPost {
@@ -195,9 +195,9 @@ export const courses: Course[] = [
     workload: "1h 10min",
     totalLessons: 4,
     progress: 50,
-    status: "em-andamento",
+    status: "in-progress",
     category: "Formação online",
-    thumbnail: "/cursos%20livres/ChatGPT%20Image%20Jun%2017,%202026,%2002_18_10%20PM%201.png",
+    thumbnail: "/free-courses/chatgpt-image-jun-17-2026.png",
     modules: [
       {
         id: "com-mod1",
@@ -251,7 +251,7 @@ export const courses: Course[] = [
     workload: "46 min",
     totalLessons: 3,
     progress: 100,
-    status: "concluido",
+    status: "completed",
     category: "Formação online",
     thumbnail: "/courses/pericia-medica.png",
     modules: [
@@ -298,7 +298,7 @@ export const courses: Course[] = [
     workload: "1h 01min",
     totalLessons: 3,
     progress: 33,
-    status: "em-andamento",
+    status: "in-progress",
     category: "Formação online",
     thumbnail: "/courses/mandado-seguranca.png",
     modules: [
@@ -345,9 +345,9 @@ export const courses: Course[] = [
     workload: "52 min",
     totalLessons: 3,
     progress: 0,
-    status: "nao-iniciado",
+    status: "not-started",
     category: "Formação online",
-    thumbnail: "/cursos%20livres/Produtividade%20Jur%C3%ADdica.png",
+    thumbnail: "/free-courses/produtividade-juridica.png",
     modules: [
       {
         id: "tec-mod1",
@@ -392,7 +392,7 @@ export const courses: Course[] = [
     workload: "45 min",
     totalLessons: 3,
     progress: 0,
-    status: "nao-iniciado",
+    status: "not-started",
     category: "Formação online",
     thumbnail: "/placeholder.svg",
     modules: [
@@ -439,7 +439,7 @@ export const courses: Course[] = [
     workload: "47 min",
     totalLessons: 3,
     progress: 0,
-    status: "nao-iniciado",
+    status: "not-started",
     category: "Formação online",
     thumbnail: "/placeholder.svg",
     modules: [
@@ -489,9 +489,9 @@ export const freeCourses: Course[] = [
     workload: "58 min",
     totalLessons: 3,
     progress: 33,
-    status: "em-andamento",
+    status: "in-progress",
     category: "Curso livre",
-    thumbnail: "/cursos%20livres/ChatGPT%20Image%20Jun%2017,%202026,%2002_18_10%20PM%201.png",
+    thumbnail: "/free-courses/chatgpt-image-jun-17-2026.png",
     modules: [
       {
         id: "mj-mod1",
@@ -536,9 +536,9 @@ export const freeCourses: Course[] = [
     workload: "42 min",
     totalLessons: 3,
     progress: 0,
-    status: "nao-iniciado",
+    status: "not-started",
     category: "Curso livre",
-    thumbnail: "/cursos%20livres/Produtividade%20Jur%C3%ADdica.png",
+    thumbnail: "/free-courses/produtividade-juridica.png",
     modules: [
       {
         id: "pj-mod1",
@@ -583,9 +583,9 @@ export const freeCourses: Course[] = [
     workload: "36 min",
     totalLessons: 3,
     progress: 100,
-    status: "concluido",
+    status: "completed",
     category: "Curso livre",
-    thumbnail: "/cursos%20livres/Atendimento%20Humanizado.png",
+    thumbnail: "/free-courses/atendimento-humanizado.png",
     modules: [
       {
         id: "ah-mod1",
@@ -623,18 +623,18 @@ export const freeCourses: Course[] = [
 
 export const inPersonCourses: InPersonCourse[] = [
   {
-    thumbnail: "/cursos%20presenciais/acidente%20de%20trabalho.png",
-    heroImage: "/cursos%20presenciais/seguran%C3%A7a%20foto%20grande.jpeg",
+    thumbnail: "/in-person-courses/acidente-de-trabalho.png",
+    heroImage: "/in-person-courses/seguranca-foto-grande.jpeg",
     heroPosition: "center 10%",
     id: "acidente-trabalho",
     title: "PPP e LTCAT na Aposentadoria Especial: Obtenção, Retificação e Impactos dos EPIs na Comprovação do Tempo Especial",
     city: "Florianópolis",
     state: "SC",
     date: "10 e 11/07/2026",
-    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
+    venue: "Hotel Castelmar - FLORIANÓPOLIS/SC",
     month: "Mar",
     year: "2026",
-    status: "em-andamento",
+    status: "in-progress",
     track: "Curso presencial",
     area: "Direito do Trabalho e Direito Previdenciário ",
     professors: ["Carlos Alberto Pereira de Castro", "João Batista Lazzari"],
@@ -691,18 +691,18 @@ c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`
     totalLessons: 1,
   },
   {
-    thumbnail: "/cursos%20presenciais/imersao%20teses.png",
-    heroImage: "/cursos%20presenciais/Escrita%20foto%20grande.jpeg",
+    thumbnail: "/in-person-courses/imersao-teses.png",
+    heroImage: "/in-person-courses/escrita-foto-grande.jpeg",
     heroPosition: "",
     id: "teses-revisionais",
     title: "PRÁTICA: MANDADO DE SEGURANÇA EM MATÉRIA PREVIDENCIÁRIA",
     city: "Florianópolis",
     state: "SC",
     date: "A previsão inicial é para que o curso ocorra das 9h às 18h, com paradas para intervalo e almoço.",
-    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
+    venue: "Hotel Castelmar - FLORIANÓPOLIS/SC",
     month: "Jul",
     year: "2026",
-    status: "em-andamento",
+    status: "in-progress",
     track: "Curso presencial",
     area: "Direito Previdenciário",
     professors: ["Marco Aurélio Serau Junior"],
@@ -741,17 +741,17 @@ c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`
     totalLessons: 1,
   },
   {
-    thumbnail: "/cursos%20presenciais/imersao%20em%20processo.png",
-    heroImage: "/cursos%20presenciais/martelo%20foto%20grande.jpeg",
+    thumbnail: "/in-person-courses/imersao-em-processo.png",
+    heroImage: "/in-person-courses/martelo-foto-grande.jpeg",
     id: "processo-judicial-previdenciario",
     title: "PRÁTICA: TESES REVISIONAIS APLICÁVEIS AOS BENEFÍCIOS NÃO PROGRAMÁVEIS DO RGPS (BENEFÍCIOS POR INCAPACIDADE / PENSÃO POR MORTE) APÓS A REFORMA DA PREVIDÊNCIA (EC N. 103/2019)",
     city: "Curitiba",
     state: "PR",
     date: "10 e 11/07/2026",
-    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
+    venue: "Hotel Castelmar - FLORIANÓPOLIS/SC",
     month: "Jul",
     year: "2026",
-    status: "em-breve",
+    status: "coming-soon",
     track: "Curso presencial",
     area: "Direito Previdenciário",
     professors: ["Lucas Alberton"],
@@ -776,17 +776,17 @@ c) Dicas na elaboracao das peticoes na Justica do Trabalho e na Justica Federal`
     availableLabel: "Disponível em Jul 2026",
   },
   {
-    thumbnail: "/cursos%20presenciais/imersao%20em%20mandado.png",
-    heroImage: "/cursos%20presenciais/acordo%20foto%20grande.jpeg",
+    thumbnail: "/in-person-courses/imersao-em-mandado.png",
+    heroImage: "/in-person-courses/acordo-foto-grande.jpeg",
     id: "mandado-seguranca-imersao",
     title: "Aposentadoria Especial na Prática : Domine PPP, LTCAT e a Prova do Tempo Especial",
     city: "Florianópolis",
     state: "SC",
     date: "10 e 11/07/2026",
-    local: "Hotel Castelmar - FLORIANÓPOLIS/SC",
+    venue: "Hotel Castelmar - FLORIANÓPOLIS/SC",
     month: "Nov",
     year: "2026",
-    status: "em-breve",
+    status: "coming-soon",
     track: "Curso presencial",
     area: "Direito Previdenciário",
     professors: ["Carlos Alberto Pereira de Castro", "João Batista Lazzari"],
@@ -875,33 +875,33 @@ export const certificates: Certificate[] = [
     id: "cert-1",
     courseTitle: "Saneamento",
     issueDate: "12/03/2026",
-    status: "emitido",
+    status: "issued",
     hours: "46 min",
   },
   {
     id: "cert-2",
     courseTitle: "Comercial",
     issueDate: "28/11/2025",
-    status: "emitido",
+    status: "issued",
     hours: "1h 10min",
   },
   {
     id: "cert-3",
     courseTitle: "Judicial",
     issueDate: "—",
-    status: "pendente",
+    status: "pending",
     hours: "1h 01min",
   },
 ]
 
 export const calendarEvents: CalendarEvent[] = [
-  { id: "ev1", title: "Aula ao vivo: Funil de aquisição que converte", date: "2026-06-12", type: "aula" },
-  { id: "ev2", title: "Prova: Comercial", date: "2026-06-18", type: "prova" },
-  { id: "ev3", title: "Aula ao vivo: Montagem da tese central", date: "2026-06-22", type: "aula" },
-  { id: "ev4", title: "PrevSummit Internacional", date: "2026-06-25", type: "evento" },
-  { id: "ev5", title: "Sunset Prev", date: "2026-06-26", type: "evento" },
-  { id: "ev6", title: "Prova: Saneamento", date: "2026-06-30", type: "prova" },
-  { id: "ev7", title: "Aula: Uso prático de IA na rotina", date: "2026-06-15", type: "aula" },
+  { id: "ev1", title: "Aula ao vivo: Funil de aquisição que converte", date: "2026-06-12", type: "lesson" },
+  { id: "ev2", title: "Prova: Comercial", date: "2026-06-18", type: "exam" },
+  { id: "ev3", title: "Aula ao vivo: Montagem da tese central", date: "2026-06-22", type: "lesson" },
+  { id: "ev4", title: "PrevSummit Internacional", date: "2026-06-25", type: "event" },
+  { id: "ev5", title: "Sunset Prev", date: "2026-06-26", type: "event" },
+  { id: "ev6", title: "Prova: Saneamento", date: "2026-06-30", type: "exam" },
+  { id: "ev7", title: "Aula: Uso prático de IA na rotina", date: "2026-06-15", type: "lesson" },
 ]
 
 export const communityPosts: CommunityPost[] = [
@@ -990,7 +990,6 @@ export const communityPosts: CommunityPost[] = [
 ]
 
 export const communityCategories = [
-  "Todos",
   "Direito Previdenciário",
   "Gestão",
   "Desenvolvimento Pessoal",
@@ -1088,7 +1087,7 @@ export function getInPersonCourse(id: string) {
     workload: inPerson.duration ?? "—",
     totalLessons: 1,
     progress: 0,
-    status: inPerson.status === "em-andamento" ? "em-andamento" : ("nao-iniciado" as const),
+    status: inPerson.status === "in-progress" ? ("in-progress" as const) : ("not-started" as const),
     category: "Cursos presenciais",
     thumbnail: inPerson.heroImage ?? inPerson.thumbnail,
     modules: modulesWithCompletion,

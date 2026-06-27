@@ -2,35 +2,10 @@
 
 import { useMemo, useState } from "react"
 import { Calendar as CalendarIcon, Video, FileCheck, Star } from "lucide-react"
+import { useFormatter, useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { calendarEvents, type CalendarEvent } from "@/lib/mock-data"
-
-const typeConfig: Record<
-  CalendarEvent["type"],
-  { label: string; icon: typeof Video; className: string; dot: string }
-> = {
-  aula: {
-    label: "Aula ao vivo",
-    icon: Video,
-    className: "bg-accent/10 text-accent border-accent/20",
-    dot: "bg-accent",
-  },
-  prova: {
-    label: "Avaliação",
-    icon: FileCheck,
-    className: "bg-destructive/10 text-destructive border-destructive/20",
-    dot: "bg-destructive",
-  },
-  evento: {
-    label: "Evento",
-    icon: Star,
-    className: "bg-gold/15 text-gold-foreground border-gold/30",
-    dot: "bg-gold",
-  },
-}
-
-const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
 
 function buildCalendarCells(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay()
@@ -49,16 +24,47 @@ function eventsForDay(year: number, month: number, day: number) {
 }
 
 export default function CalendarioPage() {
+  const t = useTranslations()
+  const format = useFormatter()
+
+  const weekdays = useMemo(() => {
+    // Jan 4 2026 = Sunday; compute short weekday names in active locale
+    return Array.from({ length: 7 }, (_, i) =>
+      format.dateTime(new Date(2026, 0, 4 + i), { weekday: "short" }).replace(".", ""),
+    )
+  }, [format])
+
+  const typeConfig: Record<
+    CalendarEvent["type"],
+    { label: string; icon: typeof Video; className: string; dot: string }
+  > = {
+    lesson: {
+      label: t("enums.eventType.lesson"),
+      icon: Video,
+      className: "bg-accent/10 text-accent border-accent/20",
+      dot: "bg-accent",
+    },
+    exam: {
+      label: t("enums.eventType.exam"),
+      icon: FileCheck,
+      className: "bg-destructive/10 text-destructive border-destructive/20",
+      dot: "bg-destructive",
+    },
+    event: {
+      label: t("enums.eventType.event"),
+      icon: Star,
+      className: "bg-gold/15 text-gold-foreground border-gold/30",
+      dot: "bg-gold",
+    },
+  }
+
   const [month, setMonth] = useState(5)
   const [year, setYear] = useState(2026)
 
   const monthLabel = useMemo(() => {
-    const label = new Date(year, month, 1).toLocaleDateString("pt-BR", {
-      month: "long",
-      year: "numeric",
-    })
+    const label = format.dateTime(new Date(year, month, 1), { month: "long", year: "numeric" })
     return label.charAt(0).toUpperCase() + label.slice(1)
-  }, [month, year])
+  }, [format, month, year])
 
   const cells = useMemo(() => buildCalendarCells(year, month), [year, month])
   const sortedEvents = useMemo(
@@ -97,9 +103,9 @@ export default function CalendarioPage() {
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
       <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">Calendário</h1>
+        <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">{t("calendar.heading")}</h1>
         <p className="mt-1 text-muted-foreground">
-          Acompanhe suas aulas ao vivo, avaliações e eventos da comunidade ESC.
+          {t("calendar.subtitle")}
         </p>
       </div>
 
@@ -116,20 +122,20 @@ export default function CalendarioPage() {
                 onClick={handlePrevMonth}
                 className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
               >
-                Mês anterior
+                {t("calendar.previousMonth")}
               </button>
               <button
                 type="button"
                 onClick={handleNextMonth}
                 className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
               >
-                Próximo mês
+                {t("calendar.nextMonth")}
               </button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-7 gap-1 text-center">
-              {WEEKDAYS.map((w) => (
+              {weekdays.map((w) => (
                 <div key={w} className="pb-2 text-xs font-semibold uppercase text-muted-foreground">
                   {w}
                 </div>
@@ -175,14 +181,14 @@ export default function CalendarioPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="font-heading text-lg">Próximos eventos</CardTitle>
+            <CardTitle className="font-heading text-lg">{t("calendar.upcomingEvents")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             {sortedEvents.map((e) => {
               const cfg = typeConfig[e.type]
               const Icon = cfg.icon
               const date = new Date(e.date + "T00:00:00")
-              const monthShort = date.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")
+              const monthShort = format.dateTime(date, { month: "short" }).replace(".", "")
               const title = e.title.replace(/^Prova\b/i, "Avaliação")
               return (
                 <div key={e.id} className="flex items-start gap-3 rounded-lg border border-border p-3">

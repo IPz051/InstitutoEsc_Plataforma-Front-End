@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   User,
 } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 import { AppNavbar } from "@/components/app-navbar"
 import { ProgressRing } from "@/components/progress-ring"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ export default async function OnlineCoursePage({
 }: {
   params: Promise<{ courseId: string }>
 }) {
+  const t = await getTranslations()
   const { courseId } = await params
   const course = getCourse(courseId)
   if (!course) notFound()
@@ -36,14 +38,14 @@ export default async function OnlineCoursePage({
 
   return (
     <>
-      <AppNavbar title="Formação Online" />
+      <AppNavbar title={t("onlineTraining.title")} />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <Link
-          href="/formacao-online"
+          href="/online-training"
           className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar para Formação Online
+          {t("onlineTraining.back")}
         </Link>
 
         <section className="grid gap-6 rounded-2xl border border-border bg-card p-5 md:grid-cols-[1.6fr_1fr] md:p-6">
@@ -72,35 +74,37 @@ export default async function OnlineCoursePage({
               </div>
               <div className="flex items-center gap-2 text-foreground">
                 <BookOpen className="h-4 w-4 text-accent" />
-                <span>{course.totalLessons} aulas</span>
+                <span>{t("courses.lessonCount", { count: course.totalLessons })}</span>
               </div>
             </div>
 
             {firstUnfinished && (
               <Button asChild size="lg" className="mt-6 w-fit">
-                <Link href={`/formacao-online/${course.id}/aula/${firstUnfinished.id}`}>
+                <Link href={`/online-training/${course.id}/lesson/${firstUnfinished.id}`}>
                   <PlayCircle className="h-4 w-4" />
-                  {course.progress > 0 ? "Continuar curso" : "Começar curso"}
+                  {course.progress > 0 ? t("courses.continueCourse") : t("courses.startCourse")}
                 </Link>
               </Button>
             )}
           </div>
 
           <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-secondary/50 p-6">
-            <ProgressRing value={course.progress} sublabel="concluído" />
+            <ProgressRing value={course.progress} sublabel={t("onlineTraining.completedSublabel")} />
             <p className="text-center text-sm text-muted-foreground">
-              {course.modules.reduce(
-                (acc, module) => acc + module.lessons.filter((lesson) => lesson.completed).length,
-                0,
-              )}{" "}
-              de {course.totalLessons} aulas concluídas
+              {t("onlineTraining.completedOfTotal", {
+                completed: course.modules.reduce(
+                  (acc, module) => acc + module.lessons.filter((lesson) => lesson.completed).length,
+                  0,
+                ),
+                total: course.totalLessons,
+              })}
             </p>
           </div>
         </section>
 
         <section>
           <h3 className="mb-4 font-heading text-lg font-semibold text-foreground">
-            Conteúdo do curso
+            {t("courses.courseContent")}
           </h3>
           <Accordion
             type={"multiple" as const}
@@ -125,8 +129,8 @@ export default async function OnlineCoursePage({
                           {module.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {done}/{module.lessons.length} aulas
-                          {module.exam ? " • 1 prova" : ""}
+                          {t("courses.moduleProgress", { done, total: module.lessons.length })}
+                          {module.exam ? t("courses.moduleExam") : ""}
                         </p>
                       </div>
                     </div>
@@ -136,7 +140,7 @@ export default async function OnlineCoursePage({
                       {module.lessons.map((lesson) => (
                         <li key={lesson.id}>
                           <Link
-                            href={`/formacao-online/${course.id}/aula/${lesson.id}`}
+                            href={`/online-training/${course.id}/lesson/${lesson.id}`}
                             className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-secondary"
                           >
                             {lesson.completed ? (
@@ -152,7 +156,7 @@ export default async function OnlineCoursePage({
                       {module.exam && (
                         <li>
                           <Link
-                            href={`/formacao-online/${course.id}/prova/${module.exam.id}`}
+                            href={`/online-training/${course.id}/exam/${module.exam.id}`}
                             className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-secondary"
                           >
                             <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-gold/15 text-gold-foreground">
@@ -170,11 +174,11 @@ export default async function OnlineCoursePage({
                                 variant="outline"
                                 className="border-accent/20 bg-accent/10 text-xs text-accent"
                               >
-                                Aprovado
+                                {t("courses.approvedBadge")}
                               </Badge>
                             ) : (
                               <Badge variant="outline" className="text-xs">
-                                Prova
+                                {t("courses.examBadge")}
                               </Badge>
                             )}
                           </Link>

@@ -15,6 +15,7 @@ import {
   MessageSquare,
   X,
 } from "lucide-react"
+import { useFormatter, useTranslations } from "next-intl"
 import { ProfessorCardsSection } from "@/components/professor-cards-section"
 import type { ProfessorTag } from "@/components/professor-tag-card"
 import { Button } from "@/components/ui/button"
@@ -39,7 +40,7 @@ export function LessonView({
   current,
   prev,
   next,
-  basePath = "/cursos",
+  basePath = "/courses",
   professorTags,
 }: {
   course: Course
@@ -49,6 +50,8 @@ export function LessonView({
   basePath?: string
   professorTags?: ProfessorTag[]
 }) {
+  const t = useTranslations()
+  const format = useFormatter()
   const [playing, setPlaying] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [question, setQuestion] = useState("")
@@ -83,7 +86,7 @@ export function LessonView({
     const nextQuestion: LessonQuestion = {
       id: `${Date.now()}`,
       text: question.trim(),
-      createdAt: new Date().toLocaleString("pt-BR", {
+      createdAt: format.dateTime(new Date(), {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -124,7 +127,7 @@ export function LessonView({
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold/20">
                     <span className="flex h-3 w-3 animate-ping rounded-full bg-gold" />
                   </div>
-                  <p className="text-sm text-primary-foreground/70">Reproduzindo aula...</p>
+                  <p className="text-sm text-primary-foreground/70">{t("lesson.playing")}</p>
                 </div>
               </div>
             )
@@ -133,12 +136,12 @@ export function LessonView({
               <button
                 onClick={() => setPlaying(true)}
                 className="group flex flex-col items-center gap-3"
-                aria-label="Reproduzir aula"
+                aria-label={t("lesson.ariaPlay")}
               >
                 <span className="flex h-20 w-20 items-center justify-center rounded-full bg-gold text-gold-foreground transition-transform group-hover:scale-105">
                   <Play className="h-8 w-8 fill-current" />
                 </span>
-                <span className="text-sm text-primary-foreground/70">Assistir aula</span>
+                <span className="text-sm text-primary-foreground/70">{t("lesson.playLabel")}</span>
               </button>
             </div>
           )}
@@ -150,7 +153,7 @@ export function LessonView({
             className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-lg bg-background/20 px-3 py-1.5 text-xs font-medium text-primary-foreground backdrop-blur lg:hidden"
           >
             <ListVideo className="h-4 w-4" />
-            Aulas
+            {t("lesson.lessonsLabel")}
           </button>
         </div>
 
@@ -167,9 +170,9 @@ export function LessonView({
           <div className="flex items-center justify-between gap-3">
             {prev ? (
               <Button asChild variant="outline" size="sm">
-                <Link href={`${basePath}/${course.id}/aula/${prev.lesson.id}`}>
+                <Link href={`${basePath}/${course.id}/lesson/${prev.lesson.id}`}>
                   <ChevronLeft className="h-4 w-4" />
-                  Aula anterior
+                  {t("lesson.previousLesson")}
                 </Link>
               </Button>
             ) : (
@@ -177,8 +180,8 @@ export function LessonView({
             )}
             {next ? (
               <Button asChild size="sm">
-                <Link href={`${basePath}/${course.id}/aula/${next.lesson.id}`}>
-                  Próxima aula
+                <Link href={`${basePath}/${course.id}/lesson/${next.lesson.id}`}>
+                  {t("lesson.nextLesson")}
                   <ChevronRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -190,11 +193,10 @@ export function LessonView({
           <section className="rounded-2xl border border-border bg-card p-4 md:p-5">
             <div className="flex flex-col gap-2">
               <h2 className="font-heading text-base font-semibold text-foreground">
-                Perguntas sobre esta aula
+                {t("lesson.questions")}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Envie sua duvida sobre o conteudo e registre o ponto exato que voce quer
-                esclarecer.
+                {t("lesson.questionsSubtitle")}
               </p>
             </div>
 
@@ -205,24 +207,23 @@ export function LessonView({
                   setQuestion(e.target.value)
                   if (questionSent) setQuestionSent(false)
                 }}
-                placeholder="Ex.: Na explicacao sobre a aula, fiquei com duvida sobre como aplicar esse ponto na pratica..."
+                placeholder={t("lesson.questionPlaceholder")}
                 rows={4}
                 className="min-h-28 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               />
 
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs text-muted-foreground">
-                  Sua pergunta fica vinculada a esta aula para acompanhamento posterior.
+                  {t("lesson.questionLinked")}
                 </p>
                 <Button type="submit" size="sm" disabled={!question.trim()}>
-                  Enviar pergunta
+                  {t("lesson.submitQuestion")}
                 </Button>
               </div>
 
               {questionSent ? (
                 <div className="rounded-xl bg-secondary px-3 py-2 text-sm text-foreground">
-                  Pergunta enviada com sucesso. Voce pode continuar assistindo a aula enquanto
-                  aguardamos a resposta.
+                  {t("lesson.questionSentMsg")}
                 </div>
               ) : null}
             </form>
@@ -231,7 +232,7 @@ export function LessonView({
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-accent" />
                 <h3 className="font-heading text-sm font-semibold text-foreground">
-                  Historico de perguntas desta aula
+                  {t("lesson.questionHistory")}
                 </h3>
               </div>
 
@@ -240,7 +241,7 @@ export function LessonView({
                   {questionHistory.map((item) => (
                     <div key={item.id} className="rounded-xl bg-secondary/60 p-3">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-medium text-foreground">Pergunta enviada</p>
+                        <p className="text-sm font-medium text-foreground">{t("lesson.questionSentLabel")}</p>
                         <span className="text-xs text-muted-foreground">{item.createdAt}</span>
                       </div>
                       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -251,7 +252,7 @@ export function LessonView({
                 </div>
               ) : (
                 <div className="mt-3 rounded-xl border border-dashed border-border px-3 py-4 text-sm text-muted-foreground">
-                  Nenhuma pergunta registrada nesta aula ainda.
+                  {t("lesson.noQuestions")}
                 </div>
               )}
             </div>
@@ -260,7 +261,7 @@ export function LessonView({
           {/* Material complementar */}
           <section>
             <h2 className="font-heading text-base font-semibold text-foreground">
-              Material complementar
+              {t("lesson.materials")}
             </h2>
             <div className="mt-3 flex flex-col gap-2">
               {materials.map((m) => (
@@ -275,7 +276,7 @@ export function LessonView({
                     <p className="truncate text-sm font-medium text-foreground">{m.name}</p>
                     <p className="text-xs text-muted-foreground">{m.size}</p>
                   </div>
-                  <Button variant="ghost" size="icon" aria-label={`Baixar ${m.name}`}>
+                  <Button variant="ghost" size="icon" aria-label={t("lesson.downloadLabel", { name: m.name })}>
                     <Download className="h-4 w-4" />
                   </Button>
                 </div>
@@ -302,22 +303,22 @@ export function LessonView({
       >
         <div className="flex items-center justify-between border-b border-border p-4">
           <div>
-            <p className="font-heading text-sm font-semibold text-foreground">Conteúdo do curso</p>
+            <p className="font-heading text-sm font-semibold text-foreground">{t("lesson.courseContent")}</p>
             <p className="text-xs text-muted-foreground">
-              {completed}/{course.totalLessons} aulas concluídas
+              {t("lesson.lessonsCompleted", { completed, total: course.totalLessons })}
             </p>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
             className="text-muted-foreground lg:hidden"
-            aria-label="Fechar"
+            aria-label={t("common.close")}
           >
             <X className="h-5 w-5" />
           </button>
         </div>
         <div className="border-b border-border px-4 py-3">
           <div className="mb-1.5 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Progresso</span>
+            <span className="text-muted-foreground">{t("lesson.progressLabel")}</span>
             <span className="font-semibold text-foreground">{progress}%</span>
           </div>
           <Progress value={progress} />
@@ -328,7 +329,7 @@ export function LessonView({
             <div key={mod.id} className="border-b border-border last:border-0">
               <div className="bg-secondary/50 px-4 py-2.5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Módulo {i + 1}
+                  {t("lesson.moduleLabel", { number: i + 1 })}
                 </p>
                 <p className="text-sm font-medium text-foreground">{mod.title}</p>
               </div>
@@ -338,7 +339,7 @@ export function LessonView({
                   return (
                     <li key={lesson.id}>
                       <Link
-                        href={`${basePath}/${course.id}/aula/${lesson.id}`}
+                        href={`${basePath}/${course.id}/lesson/${lesson.id}`}
                         onClick={() => setSidebarOpen(false)}
                         className={cn(
                           "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors",
@@ -366,7 +367,7 @@ export function LessonView({
                 {mod.exam && (
                   <li>
                     <Link
-                      href={`${basePath}/${course.id}/prova/${mod.exam.id}`}
+                      href={`${basePath}/${course.id}/exam/${mod.exam.id}`}
                       onClick={() => setSidebarOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-secondary"
                     >

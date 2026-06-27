@@ -12,6 +12,7 @@ import {
   UserRound,
   Wallet,
 } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 import { AppNavbar } from "@/components/app-navbar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -25,36 +26,46 @@ import {
 
 const summaryCards = [
   {
-    label: "Receita mensal",
+    labelKey: "admin.metricRevenue",
     value: "R$ 84.320",
-    detail: "+12,4% vs. mês anterior",
+    detailKey: "admin.metricRevenueDetail",
     icon: BadgeDollarSign,
   },
   {
-    label: "MRR projetado",
+    labelKey: "admin.metricMrr",
     value: "R$ 126.900",
-    detail: "Próximos 30 dias",
+    detailKey: "admin.metricMrrDetail",
     icon: Wallet,
   },
   {
-    label: "Inadimplentes",
+    labelKey: "admin.metricOverdue",
     value: "18 alunos",
-    detail: "8 cobranças críticas",
+    detailKey: "admin.metricOverdueDetail",
     icon: ShieldAlert,
   },
   {
-    label: "Documentos pendentes",
+    labelKey: "admin.metricDocuments",
     value: "27 envios",
-    detail: "9 fora do prazo",
+    detailKey: "admin.metricDocumentsDetail",
     icon: FileClock,
   },
 ]
 
 const revenueRows = [
-  { period: "Mensal", revenue: "R$ 84.320", recurring: "R$ 61.450", pending: "R$ 8.210" },
-  { period: "Trimestral", revenue: "R$ 241.960", recurring: "R$ 182.700", pending: "R$ 19.480" },
-  { period: "Anual", revenue: "R$ 1.012.800", recurring: "R$ 742.200", pending: "R$ 66.900" },
+  { periodKey: "admin.periodMonthly", revenue: "R$ 84.320", recurring: "R$ 61.450", pending: "R$ 8.210" },
+  { periodKey: "admin.periodQuarterly", revenue: "R$ 241.960", recurring: "R$ 182.700", pending: "R$ 19.480" },
+  { periodKey: "admin.periodAnnual", revenue: "R$ 1.012.800", recurring: "R$ 742.200", pending: "R$ 66.900" },
 ]
+
+// Seed status values stay Portuguese (data); display is localized via this map.
+const statusLabelKeys: Record<string, string> = {
+  "Ativo": "admin.statusActive",
+  "Em atraso": "admin.statusOverdue",
+  "Crítico": "admin.statusCritical",
+  "Aguardando revisão": "admin.statusAwaitingReview",
+  "Fora do prazo": "admin.statusPastDue",
+  "Aprovado": "admin.statusApproved",
+}
 
 const students = [
   {
@@ -136,23 +147,25 @@ function statusBadgeVariant(status: string): "default" | "secondary" | "destruct
   return "secondary"
 }
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const t = await getTranslations()
+  const statusLabel = (status: string) =>
+    statusLabelKeys[status] ? t(statusLabelKeys[status]) : status
   return (
     <>
-      <AppNavbar title="Painel Administrativo" />
+      <AppNavbar title={t("admin.title")} />
       <div className="flex flex-col gap-8 p-4 md:p-6">
         <section className="rounded-3xl bg-white p-6 ring-1 ring-[#e7ecff]">
           <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
             <div className="max-w-3xl space-y-3">
               <Badge variant="secondary" className="bg-[#eef3ff] text-primary">
-                Operação administrativa
+                {t("admin.operationBadge")}
               </Badge>
               <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
-                Painel Administrativo
+                {t("admin.heading")}
               </h1>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Acompanhe indicadores financeiros, alunos, débitos e documentos em um layout
-                mais objetivo, com foco em leitura rápida e ações operacionais.
+                {t("admin.description")}
               </p>
             </div>
           </div>
@@ -161,7 +174,7 @@ export default function AdminPage() {
         <section className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4">
           {summaryCards.map((card) => (
             <Card
-              key={card.label}
+              key={card.labelKey}
               className="h-full rounded-3xl border-0 shadow-none ring-1 ring-[#e7ecff]"
             >
               <CardContent className="flex h-full items-start gap-4 p-5">
@@ -170,12 +183,12 @@ export default function AdminPage() {
                 </div>
                 <div className="flex min-h-[72px] flex-col justify-between">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    {card.label}
+                    {t(card.labelKey)}
                   </p>
                   <p className="mt-1 font-heading text-2xl font-bold text-foreground">
                     {card.value}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{card.detail}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t(card.detailKey)}</p>
                 </div>
               </CardContent>
             </Card>
@@ -187,27 +200,27 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BadgeDollarSign className="h-4 w-4 text-primary" />
-                Análise financeira
+                {t("admin.financialAnalysis")}
               </CardTitle>
               <CardDescription>
-                Receita por período, recorrência e visão de pendências em aberto.
+                {t("admin.financialDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-4">
               <div className="grid gap-3 md:grid-cols-3">
                 {revenueRows.map((row) => (
-                  <div key={row.period} className="rounded-2xl bg-[#f6f8ff] p-4 ring-1 ring-[#e7ecff]">
+                  <div key={row.periodKey} className="rounded-2xl bg-[#f6f8ff] p-4 ring-1 ring-[#e7ecff]">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {row.period}
+                      {t(row.periodKey)}
                     </p>
                     <p className="mt-2 font-heading text-2xl font-bold text-foreground">
                       {row.revenue}
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      Recorrente: {row.recurring}
+                      {t("admin.recurring", { value: row.recurring })}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Em aberto: {row.pending}
+                      {t("admin.openBalance", { value: row.pending })}
                     </p>
                   </div>
                 ))}
@@ -216,24 +229,24 @@ export default function AdminPage() {
               <div className="grid flex-1 gap-3 md:grid-cols-2">
                 <div className="rounded-2xl border border-border bg-white p-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Projeção recorrente
+                    {t("admin.recurringProjection")}
                   </p>
                   <p className="mt-2 font-heading text-xl font-bold text-foreground">
                     R$ 126.900
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Estimativa de renovação e mensalidades previstas para os próximos 30 dias.
+                    {t("admin.recurringProjectionDesc")}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-border bg-white p-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Cobranças monitoradas
+                    {t("admin.monitoredCharges")}
                   </p>
                   <p className="mt-2 font-heading text-xl font-bold text-foreground">
                     R$ 8.210
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Títulos com tratativa aberta e potencial de recuperação imediata.
+                    {t("admin.monitoredChargesDesc")}
                   </p>
                 </div>
               </div>
@@ -247,10 +260,10 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UserRound className="h-4 w-4 text-primary" />
-                Gestão de alunos
+                {t("admin.studentManagement")}
               </CardTitle>
               <CardDescription>
-                Cadastro, progresso por curso, plano ativo e status de pagamento.
+                {t("admin.studentManagementDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -268,7 +281,7 @@ export default function AdminPage() {
                       <Badge variant="outline">{student.progress}</Badge>
                       <Badge variant="secondary">{student.plan}</Badge>
                       <Badge variant={statusBadgeVariant(student.payment)}>
-                        {student.payment}
+                        {statusLabel(student.payment)}
                       </Badge>
                     </div>
                   </div>
@@ -281,10 +294,10 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <HandCoins className="h-4 w-4 text-primary" />
-                Gestão de débitos
+                {t("admin.debtManagement")}
               </CardTitle>
               <CardDescription>
-                Cobranças em aberto com ações rápidas para retenção e negociação.
+                {t("admin.debtManagementDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -297,22 +310,22 @@ export default function AdminPage() {
                     <div>
                       <p className="font-medium text-foreground">{row.student}</p>
                       <p className="text-sm text-muted-foreground">
-                        {row.plan} • vencimento em {row.dueDate}
+                        {t("admin.dueOn", { plan: row.plan, date: row.dueDate })}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         <Badge variant="outline">{row.amount}</Badge>
-                        <Badge variant={statusBadgeVariant(row.status)}>{row.status}</Badge>
+                        <Badge variant={statusBadgeVariant(row.status)}>{statusLabel(row.status)}</Badge>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" size="sm">
-                        Reenviar cobrança
+                        {t("admin.resendCharge")}
                       </Button>
                       <Button variant="outline" size="sm">
-                        Negociar
+                        {t("admin.negotiate")}
                       </Button>
                       <Button variant="ghost" size="sm">
-                        Cancelar matrícula
+                        {t("admin.cancelEnrollment")}
                       </Button>
                     </div>
                   </div>
@@ -328,10 +341,10 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <IdCard className="h-4 w-4 text-primary" />
-                Gestão de documentos
+                {t("admin.documentManagement")}
               </CardTitle>
               <CardDescription>
-                Visualização, aprovação, rejeição e acompanhamento de pendências por aluno.
+                {t("admin.documentManagementDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -347,19 +360,19 @@ export default function AdminPage() {
                         {row.student} • {row.course}
                       </p>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
-                        <Badge variant={statusBadgeVariant(row.status)}>{row.status}</Badge>
+                        <Badge variant={statusBadgeVariant(row.status)}>{statusLabel(row.status)}</Badge>
                         <span className="text-xs text-muted-foreground">{row.note}</span>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" size="sm">
-                        Aprovar
+                        {t("admin.approve")}
                       </Button>
                       <Button variant="outline" size="sm">
-                        Rejeitar
+                        {t("admin.reject")}
                       </Button>
                       <Button variant="ghost" size="sm">
-                        Adicionar observação
+                        {t("admin.addNote")}
                       </Button>
                     </div>
                   </div>
@@ -372,10 +385,10 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CircleAlert className="h-4 w-4 text-primary" />
-                Pendências críticas
+                {t("admin.criticalPending")}
               </CardTitle>
               <CardDescription>
-                Alunos com documentos pendentes fora do prazo ou bloqueios de fluxo.
+                {t("admin.criticalPendingDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -391,10 +404,10 @@ export default function AdminPage() {
               <div className="rounded-2xl bg-[#f6f8ff] p-4 ring-1 ring-[#e7ecff]">
                 <div className="flex items-center gap-2">
                   <FileCheck2 className="h-4 w-4 text-primary" />
-                  <p className="font-medium text-foreground">Checklist documental</p>
+                  <p className="font-medium text-foreground">{t("admin.docChecklist")}</p>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  14 alunos aguardam validação manual em até 24h.
+                  {t("admin.docChecklistDesc", { count: 14 })}
                 </p>
               </div>
             </CardContent>

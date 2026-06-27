@@ -12,6 +12,7 @@ import {
   Lock,
   ArrowLeft,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -28,12 +29,13 @@ type Phase = "intro" | "running" | "result"
 export function ExamView({
   course,
   exam,
-  basePath = "/cursos",
+  basePath = "/courses",
 }: {
   course: Course
   exam: Exam
   basePath?: string
 }) {
+  const t = useTranslations()
   const [phase, setPhase] = useState<Phase>("intro")
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT)
@@ -83,7 +85,7 @@ export function ExamView({
         className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Voltar ao curso
+        {t("exam.backToCourse")}
       </Link>
 
       {/* INTRO */}
@@ -98,11 +100,11 @@ export function ExamView({
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Info label="Questões" value={`${exam.questions.length}`} />
-              <Info label="Nota mínima" value={`${exam.passingScore}%`} />
-              <Info label="Tempo" value="15 min" />
+              <Info label={t("exam.questionsLabel")} value={`${exam.questions.length}`} />
+              <Info label={t("exam.passingScoreLabel")} value={`${exam.passingScore}%`} />
+              <Info label={t("exam.timeLabel")} value={t("exam.timeValue")} />
               <Info
-                label="Tentativas"
+                label={t("exam.attemptsLabel")}
                 value={`${attemptsLeft}/${exam.maxAttempts}`}
               />
             </div>
@@ -111,22 +113,22 @@ export function ExamView({
               <Banner
                 tone="success"
                 icon={Trophy}
-                title="Prova concluída com aprovação"
-                desc="Você já atingiu a nota mínima. Esta prova está bloqueada para novas tentativas."
+                title={t("exam.passedTitle")}
+                desc={t("exam.passedDesc")}
               />
             ) : attemptsLeft <= 0 ? (
               <Banner
                 tone="danger"
                 icon={Lock}
-                title="Tentativas esgotadas"
-                desc={`Você utilizou todas as ${exam.maxAttempts} tentativas disponíveis para esta avaliação.`}
+                title={t("exam.attemptsExhausted")}
+                desc={t("exam.attemptsExhaustedDesc", { max: exam.maxAttempts })}
               />
             ) : (
               <Banner
                 tone="info"
                 icon={AlertTriangle}
-                title="Antes de começar"
-                desc={`Você tem até 15 minutos e ${attemptsLeft} de ${exam.maxAttempts} tentativas restantes. Ao atingir ${exam.passingScore}%, a prova será bloqueada.`}
+                title={t("exam.beforeYouStart")}
+                desc={t("exam.beforeYouStartDesc", { left: attemptsLeft, max: exam.maxAttempts, score: exam.passingScore })}
               />
             )}
 
@@ -134,10 +136,10 @@ export function ExamView({
               {locked ? (
                 <>
                   <Lock className="h-4 w-4" />
-                  Prova bloqueada
+                  {t("exam.locked")}
                 </>
               ) : (
-                "Iniciar prova"
+                t("exam.start")
               )}
             </Button>
           </CardContent>
@@ -149,7 +151,7 @@ export function ExamView({
         <>
           <div className="sticky top-16 z-10 flex items-center justify-between rounded-xl border border-border bg-card p-4">
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Respondidas:</span>
+              <span className="text-muted-foreground">{t("exam.answered")}</span>
               <span className="font-semibold text-foreground">
                 {answeredCount}/{exam.questions.length}
               </span>
@@ -208,11 +210,11 @@ export function ExamView({
             onClick={finish}
             disabled={answeredCount < exam.questions.length}
           >
-            Finalizar prova
+            {t("exam.finalizeExam")}
           </Button>
           {answeredCount < exam.questions.length && (
             <p className="-mt-3 text-center text-xs text-muted-foreground">
-              Responda todas as questões para finalizar.
+              {t("exam.answerAll")}
             </p>
           )}
         </>
@@ -239,16 +241,16 @@ export function ExamView({
 
             <div>
               <h2 className="font-heading text-2xl font-bold text-foreground">
-                {score >= exam.passingScore ? "Parabéns, você foi aprovado!" : "Você não atingiu a nota mínima"}
+                {score >= exam.passingScore ? t("exam.passedResult") : t("exam.failedResult")}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Nota mínima para aprovação: {exam.passingScore}%
+                {t("exam.passingScoreResult", { score: exam.passingScore })}
               </p>
             </div>
 
             <div className="w-full max-w-xs">
               <div className="mb-1.5 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Sua nota</span>
+                <span className="text-muted-foreground">{t("exam.yourScore")}</span>
                 <span className="font-heading text-xl font-bold text-foreground">{score}%</span>
               </div>
               <Progress value={score} />
@@ -258,14 +260,11 @@ export function ExamView({
               {passed ? (
                 <span className="inline-flex items-center gap-1.5 text-accent">
                   <CheckCircle2 className="h-4 w-4" />
-                  Prova bloqueada após aprovação
+                  {t("exam.lockedAfterApproval")}
                 </span>
               ) : (
                 <span>
-                  Tentativas restantes:{" "}
-                  <strong className="text-foreground">
-                    {exam.maxAttempts - attemptsUsed} de {exam.maxAttempts}
-                  </strong>
+                  {t("exam.attemptsRemaining", { remaining: exam.maxAttempts - attemptsUsed, max: exam.maxAttempts })}
                 </span>
               )}
             </div>
@@ -274,11 +273,11 @@ export function ExamView({
               {!passed && exam.maxAttempts - attemptsUsed > 0 && (
                 <Button onClick={start}>
                   <RotateCcw className="h-4 w-4" />
-                  Tentar novamente
+                  {t("exam.tryAgain")}
                 </Button>
               )}
               <Button asChild variant="outline">
-                <Link href={`${basePath}/${course.id}`}>Voltar ao curso</Link>
+                <Link href={`${basePath}/${course.id}`}>{t("exam.backToCourse")}</Link>
               </Button>
             </div>
           </CardContent>
