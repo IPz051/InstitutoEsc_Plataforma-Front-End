@@ -29,7 +29,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { student } from "@/lib/mock-data"
-import logoEsc from "@/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
+import logoEsc from "@/public/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
 
 type NavItem = {
   titleKey: string
