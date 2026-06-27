@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toast } from "sonner"
 import {
@@ -24,7 +23,6 @@ import { useAuthStore } from "@/stores/authStore"
 import logoEsc from "@/public/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
 
 export default function LoginPage() {
-  const router = useRouter()
   const login = useAuthStore((s) => s.login)
   const loading = useAuthStore((s) => s.isLoading)
   const [showPassword, setShowPassword] = useState(false)
@@ -38,7 +36,8 @@ export default function LoginPage() {
     e.preventDefault()
     try {
       await login({ email, password }, rememberMe)
-      router.push("/dashboard")
+      // Full navigation (not pushState) so Firefox/Chrome password managers detect the login.
+      window.location.href = "/dashboard"
     } catch {
       // Backend returns 500 (not 401) for bad credentials — treat any failure as a failed login.
       toast.error("E-mail ou senha inválidos. Tente novamente.")
@@ -134,7 +133,7 @@ export default function LoginPage() {
             <h1 className="font-heading text-3xl font-bold text-foreground">Bem-vindo de volta</h1>
             <p className="mt-2 text-sm text-muted-foreground">Acesse seus cursos, a formação e as edições do PrevExperience.</p>
 
-            <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
+            <form onSubmit={handleSubmit} autoComplete="on" className="mt-8 flex flex-col gap-5">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="email">E-mail</Label>
                 <div className="relative">
@@ -143,7 +142,7 @@ export default function LoginPage() {
                     id="email"
                     name="email"
                     type="email"
-                    autoComplete="email"
+                    autoComplete="username"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seuemail@exemplo.com"
