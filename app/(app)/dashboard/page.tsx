@@ -8,11 +8,11 @@ import {
 } from "lucide-react"
 import { AppNavbar } from "@/components/app-navbar"
 import { CourseCard } from "@/components/course-card"
+import { DashboardGreeting } from "@/components/dashboard-greeting"
 import { ProgressRing } from "@/components/progress-ring"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  student,
   courses,
   certificates,
   calendarEvents,
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
         <section className="flex flex-col gap-4 rounded-3xl bg-white p-6 ring-1 ring-[#e7ecff] md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
             <h2 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
-              {`Olá, ${student.firstName}`}
+              <DashboardGreeting />
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Você está no ritmo certo. Continue sua formação.

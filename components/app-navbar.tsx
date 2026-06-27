@@ -3,9 +3,11 @@
 import { Bell, Search } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Input } from "@/components/ui/input"
-import { student } from "@/lib/mock-data"
+import { useUserStore } from "@/stores/userStore"
+import { getInitials, getRoleLabel } from "@/lib/user-display"
 
 export function AppNavbar({ title }: { title: string }) {
+  const user = useUserStore((s) => s.user)
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[#e7ecff] bg-[#f6f8ff]/80 px-4 backdrop-blur md:px-6">
       <SidebarTrigger className="text-foreground" />
@@ -33,11 +35,11 @@ export function AppNavbar({ title }: { title: string }) {
 
         <div className="hidden items-center gap-3 rounded-full bg-white px-2 py-1.5 shadow-sm ring-1 ring-[#e7ecff] md:flex">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-secondary-foreground">
-            {student.initials}
+            {user ? getInitials(user.name) : ""}
           </div>
           <div className="mr-1 flex flex-col leading-tight">
-            <span className="text-sm font-semibold text-foreground">{student.name}</span>
-            <span className="text-xs font-medium text-primary">{student.planName}</span>
+            <span className="text-sm font-semibold text-foreground">{user?.name ?? ""}</span>
+            <span className="text-xs font-medium text-primary">{user ? getRoleLabel(user.role) : ""}</span>
           </div>
         </div>
       </div>

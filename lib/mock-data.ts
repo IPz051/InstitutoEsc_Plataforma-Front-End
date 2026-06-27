@@ -112,16 +112,6 @@ export interface CommunityComment {
   likes: number
 }
 
-export const student = {
-  name: "Mariana Costa",
-  firstName: "Mariana",
-  email: "mariana.costa@email.com",
-  initials: "MC",
-  role: "Pós-graduação em Direito Previdenciário",
-  planName: "Premium",
-  planDetails: "Plano ativo • acesso vitalício",
-}
-
 function makeQuestions(prefix: string): Question[] {
   return [
     {

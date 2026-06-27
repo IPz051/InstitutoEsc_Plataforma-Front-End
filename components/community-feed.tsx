@@ -8,11 +8,14 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { communityPosts, communityCategories, student, type CommunityPost } from "@/lib/mock-data"
+import { communityPosts, communityCategories, type CommunityPost } from "@/lib/mock-data"
+import { useUserStore } from "@/stores/userStore"
+import { getInitials } from "@/lib/user-display"
 
 function PostCard({ post }: { post: CommunityPost }) {
   const [liked, setLiked] = useState(false)
   const [showComments, setShowComments] = useState(false)
+  const user = useUserStore((s) => s.user)
   const likeCount = post.likes + (liked ? 1 : 0)
 
   return (
@@ -81,7 +84,7 @@ function PostCard({ post }: { post: CommunityPost }) {
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-accent text-xs font-semibold text-accent-foreground">
-                      {student.initials}
+                      {user ? getInitials(user.name) : ""}
                     </AvatarFallback>
                   </Avatar>
                   <div className="relative flex-1">
@@ -105,6 +108,7 @@ function PostCard({ post }: { post: CommunityPost }) {
 export function CommunityFeed() {
   const [activeCategory, setActiveCategory] = useState("")
   const [composerOpen, setComposerOpen] = useState(false)
+  const user = useUserStore((s) => s.user)
 
   const filtered =
     activeCategory === ""
@@ -123,7 +127,7 @@ export function CommunityFeed() {
               >
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-accent text-sm font-semibold text-accent-foreground">
-                    {student.initials}
+                    {user ? getInitials(user.name) : ""}
                   </AvatarFallback>
                 </Avatar>
                 <span className="flex-1 rounded-full bg-secondary px-4 py-2.5 text-sm text-muted-foreground">

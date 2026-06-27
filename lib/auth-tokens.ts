@@ -36,6 +36,14 @@ export function getRefreshToken() {
   return Cookies.get(REFRESH_TOKEN_COOKIE)
 }
 
+export function updateAccessToken(accessToken: string) {
+  const persistent = !!Cookies.get(REFRESH_TOKEN_COOKIE)
+  const options: Cookies.CookieAttributes = persistent
+    ? { ...baseOptions, expires: PERSISTENT_DAYS }
+    : baseOptions
+  Cookies.set(ACCESS_TOKEN_COOKIE, accessToken, options)
+}
+
 export function clearAuthTokens() {
   Cookies.remove(ACCESS_TOKEN_COOKIE, { path: "/" })
   Cookies.remove(REFRESH_TOKEN_COOKIE, { path: "/" })
