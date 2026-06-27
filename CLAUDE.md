@@ -53,6 +53,40 @@ Tailwind CSS v4 with CSS variables for theming. Global styles and CSS variable d
 
 ---
 
+## Services & Types
+
+### Structure
+
+```
+services/
+  api.ts                  # axios instance + interceptors (base URL, auth header)
+  <domain>/
+    <domain>Service.ts    # functions for each endpoint in the domain
+types/
+  index.ts                # all TypeScript types/interfaces centralized here
+```
+
+### File naming conventions
+
+- Service files: **camelCase** — `authService.ts`, `usersService.ts`
+- All types/interfaces live in **`types/index.ts`** — never colocate `.types.ts` files next to services
+- Import types always from `@/types`, never from relative paths
+
+### Adding a new domain
+
+1. Create `services/<domain>/<domain>Service.ts`
+2. Add the domain's types to `types/index.ts`
+3. Import the axios instance from `@/services/api`
+
+### Existing domains
+
+| Domain | File | Endpoints |
+|--------|------|-----------|
+| `auth` | `services/auth/authService.ts` | `POST /auth/login`, `POST /auth/refresh` |
+| `users` | `services/users/usersService.ts` | `GET /users/current` |
+
+---
+
 ## Internationalisation (i18n)
 
 ### Stack
