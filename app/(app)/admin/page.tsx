@@ -12,7 +12,6 @@ import {
   UserRound,
   Wallet,
 } from "lucide-react"
-import { getTranslations } from "next-intl/server"
 import { AppNavbar } from "@/components/app-navbar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -26,45 +25,45 @@ import {
 
 const summaryCards = [
   {
-    labelKey: "admin.metricRevenue",
+    label: "Receita mensal",
     value: "R$ 84.320",
-    detailKey: "admin.metricRevenueDetail",
+    detail: "+12,4% vs. mês anterior",
     icon: BadgeDollarSign,
   },
   {
-    labelKey: "admin.metricMrr",
+    label: "MRR projetado",
     value: "R$ 126.900",
-    detailKey: "admin.metricMrrDetail",
+    detail: "Próximos 30 dias",
     icon: Wallet,
   },
   {
-    labelKey: "admin.metricOverdue",
+    label: "Inadimplentes",
     value: "18 alunos",
-    detailKey: "admin.metricOverdueDetail",
+    detail: "8 cobranças críticas",
     icon: ShieldAlert,
   },
   {
-    labelKey: "admin.metricDocuments",
+    label: "Documentos pendentes",
     value: "27 envios",
-    detailKey: "admin.metricDocumentsDetail",
+    detail: "9 fora do prazo",
     icon: FileClock,
   },
 ]
 
 const revenueRows = [
-  { periodKey: "admin.periodMonthly", revenue: "R$ 84.320", recurring: "R$ 61.450", pending: "R$ 8.210" },
-  { periodKey: "admin.periodQuarterly", revenue: "R$ 241.960", recurring: "R$ 182.700", pending: "R$ 19.480" },
-  { periodKey: "admin.periodAnnual", revenue: "R$ 1.012.800", recurring: "R$ 742.200", pending: "R$ 66.900" },
+  { period: "Mensal", revenue: "R$ 84.320", recurring: "R$ 61.450", pending: "R$ 8.210" },
+  { period: "Trimestral", revenue: "R$ 241.960", recurring: "R$ 182.700", pending: "R$ 19.480" },
+  { period: "Anual", revenue: "R$ 1.012.800", recurring: "R$ 742.200", pending: "R$ 66.900" },
 ]
 
 // Seed status values stay Portuguese (data); display is localized via this map.
-const statusLabelKeys: Record<string, string> = {
-  "Ativo": "admin.statusActive",
-  "Em atraso": "admin.statusOverdue",
-  "Crítico": "admin.statusCritical",
-  "Aguardando revisão": "admin.statusAwaitingReview",
-  "Fora do prazo": "admin.statusPastDue",
-  "Aprovado": "admin.statusApproved",
+const statusLabels: Record<string, string> = {
+  "Ativo": "Ativo",
+  "Em atraso": "Em atraso",
+  "Crítico": "Crítico",
+  "Aguardando revisão": "Aguardando revisão",
+  "Fora do prazo": "Fora do prazo",
+  "Aprovado": "Aprovado",
 }
 
 const students = [
@@ -148,24 +147,23 @@ function statusBadgeVariant(status: string): "default" | "secondary" | "destruct
 }
 
 export default async function AdminPage() {
-  const t = await getTranslations()
   const statusLabel = (status: string) =>
-    statusLabelKeys[status] ? t(statusLabelKeys[status]) : status
+    statusLabels[status] ?? status
   return (
     <>
-      <AppNavbar title={t("admin.title")} />
+      <AppNavbar title="Painel Administrativo" />
       <div className="flex flex-col gap-8 p-4 md:p-6">
         <section className="rounded-3xl bg-white p-6 ring-1 ring-[#e7ecff]">
           <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
             <div className="max-w-3xl space-y-3">
               <Badge variant="secondary" className="bg-[#eef3ff] text-primary">
-                {t("admin.operationBadge")}
+                Operação administrativa
               </Badge>
               <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
-                {t("admin.heading")}
+                Painel Administrativo
               </h1>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {t("admin.description")}
+                Acompanhe indicadores financeiros, alunos, débitos e documentos em um layout mais objetivo, com foco em leitura rápida e ações operacionais.
               </p>
             </div>
           </div>
@@ -174,7 +172,7 @@ export default async function AdminPage() {
         <section className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4">
           {summaryCards.map((card) => (
             <Card
-              key={card.labelKey}
+              key={card.label}
               className="h-full rounded-3xl border-0 shadow-none ring-1 ring-[#e7ecff]"
             >
               <CardContent className="flex h-full items-start gap-4 p-5">
@@ -183,12 +181,12 @@ export default async function AdminPage() {
                 </div>
                 <div className="flex min-h-[72px] flex-col justify-between">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    {t(card.labelKey)}
+                    {card.label}
                   </p>
                   <p className="mt-1 font-heading text-2xl font-bold text-foreground">
                     {card.value}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{t(card.detailKey)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{card.detail}</p>
                 </div>
               </CardContent>
             </Card>
@@ -200,27 +198,27 @@ export default async function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BadgeDollarSign className="h-4 w-4 text-primary" />
-                {t("admin.financialAnalysis")}
+                Análise financeira
               </CardTitle>
               <CardDescription>
-                {t("admin.financialDesc")}
+                Receita por período, recorrência e visão de pendências em aberto.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-4">
               <div className="grid gap-3 md:grid-cols-3">
                 {revenueRows.map((row) => (
-                  <div key={row.periodKey} className="rounded-2xl bg-[#f6f8ff] p-4 ring-1 ring-[#e7ecff]">
+                  <div key={row.period} className="rounded-2xl bg-[#f6f8ff] p-4 ring-1 ring-[#e7ecff]">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t(row.periodKey)}
+                      {row.period}
                     </p>
                     <p className="mt-2 font-heading text-2xl font-bold text-foreground">
                       {row.revenue}
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {t("admin.recurring", { value: row.recurring })}
+                      {`Recorrente: ${row.recurring}`}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {t("admin.openBalance", { value: row.pending })}
+                      {`Em aberto: ${row.pending}`}
                     </p>
                   </div>
                 ))}
@@ -229,24 +227,24 @@ export default async function AdminPage() {
               <div className="grid flex-1 gap-3 md:grid-cols-2">
                 <div className="rounded-2xl border border-border bg-white p-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t("admin.recurringProjection")}
+                    Projeção recorrente
                   </p>
                   <p className="mt-2 font-heading text-xl font-bold text-foreground">
                     R$ 126.900
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {t("admin.recurringProjectionDesc")}
+                    Estimativa de renovação e mensalidades previstas para os próximos 30 dias.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-border bg-white p-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t("admin.monitoredCharges")}
+                    Cobranças monitoradas
                   </p>
                   <p className="mt-2 font-heading text-xl font-bold text-foreground">
                     R$ 8.210
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {t("admin.monitoredChargesDesc")}
+                    Títulos com tratativa aberta e potencial de recuperação imediata.
                   </p>
                 </div>
               </div>
@@ -260,10 +258,10 @@ export default async function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UserRound className="h-4 w-4 text-primary" />
-                {t("admin.studentManagement")}
+                Gestão de alunos
               </CardTitle>
               <CardDescription>
-                {t("admin.studentManagementDesc")}
+                Cadastro, progresso por curso, plano ativo e status de pagamento.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -294,10 +292,10 @@ export default async function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <HandCoins className="h-4 w-4 text-primary" />
-                {t("admin.debtManagement")}
+                Gestão de débitos
               </CardTitle>
               <CardDescription>
-                {t("admin.debtManagementDesc")}
+                Cobranças em aberto com ações rápidas para retenção e negociação.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -310,7 +308,7 @@ export default async function AdminPage() {
                     <div>
                       <p className="font-medium text-foreground">{row.student}</p>
                       <p className="text-sm text-muted-foreground">
-                        {t("admin.dueOn", { plan: row.plan, date: row.dueDate })}
+                        {`${row.plan} • vencimento em ${row.dueDate}`}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         <Badge variant="outline">{row.amount}</Badge>
@@ -319,13 +317,13 @@ export default async function AdminPage() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" size="sm">
-                        {t("admin.resendCharge")}
+                        Reenviar cobrança
                       </Button>
                       <Button variant="outline" size="sm">
-                        {t("admin.negotiate")}
+                        Negociar
                       </Button>
                       <Button variant="ghost" size="sm">
-                        {t("admin.cancelEnrollment")}
+                        Cancelar matrícula
                       </Button>
                     </div>
                   </div>
@@ -341,10 +339,10 @@ export default async function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <IdCard className="h-4 w-4 text-primary" />
-                {t("admin.documentManagement")}
+                Gestão de documentos
               </CardTitle>
               <CardDescription>
-                {t("admin.documentManagementDesc")}
+                Visualização, aprovação, rejeição e acompanhamento de pendências por aluno.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -366,13 +364,13 @@ export default async function AdminPage() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" size="sm">
-                        {t("admin.approve")}
+                        Aprovar
                       </Button>
                       <Button variant="outline" size="sm">
-                        {t("admin.reject")}
+                        Rejeitar
                       </Button>
                       <Button variant="ghost" size="sm">
-                        {t("admin.addNote")}
+                        Adicionar observação
                       </Button>
                     </div>
                   </div>
@@ -385,10 +383,10 @@ export default async function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CircleAlert className="h-4 w-4 text-primary" />
-                {t("admin.criticalPending")}
+                Pendências críticas
               </CardTitle>
               <CardDescription>
-                {t("admin.criticalPendingDesc")}
+                Alunos com documentos pendentes fora do prazo ou bloqueios de fluxo.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex h-full flex-col gap-3">
@@ -404,10 +402,10 @@ export default async function AdminPage() {
               <div className="rounded-2xl bg-[#f6f8ff] p-4 ring-1 ring-[#e7ecff]">
                 <div className="flex items-center gap-2">
                   <FileCheck2 className="h-4 w-4 text-primary" />
-                  <p className="font-medium text-foreground">{t("admin.docChecklist")}</p>
+                  <p className="font-medium text-foreground">Checklist documental</p>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {t("admin.docChecklistDesc", { count: 14 })}
+                  14 alunos aguardam validação manual em até 24h.
                 </p>
               </div>
             </CardContent>

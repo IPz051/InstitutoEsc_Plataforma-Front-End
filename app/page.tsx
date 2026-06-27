@@ -4,7 +4,6 @@ import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
   ArrowLeft,
@@ -26,8 +25,6 @@ import logoEsc from "@/public/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
 
 export default function LoginPage() {
   const router = useRouter()
-  const t = useTranslations("auth.login")
-  const tCommon = useTranslations("common")
   const login = useAuthStore((s) => s.login)
   const loading = useAuthStore((s) => s.isLoading)
   const [showPassword, setShowPassword] = useState(false)
@@ -44,7 +41,7 @@ export default function LoginPage() {
       router.push("/dashboard")
     } catch {
       // Backend returns 500 (not 401) for bad credentials — treat any failure as a failed login.
-      toast.error(t("error"))
+      toast.error("E-mail ou senha inválidos. Tente novamente.")
     }
   }
 
@@ -79,16 +76,16 @@ export default function LoginPage() {
 
         <div className="relative z-10 max-w-lg">
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-foreground/80">
-            {t("tagline")}
+            O novo ecossistema do Direito Previdenciário
           </p>
           <h2 className="mt-5 font-heading text-5xl font-bold leading-[1.05] text-balance">
-            {t("headline")}
+            Liderança, autoridade e resultados. Sempre juntos.
           </h2>
 
           <div className="mt-10 max-w-md overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm">
             <Image
               src="/card-login.png"
-              alt={t("cardAlt")}
+              alt="Card Comunidade ESC"
               width={440}
               height={107}
               className="h-auto w-full object-cover"
@@ -99,10 +96,10 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-primary-foreground/80">
           <span className="inline-flex items-center gap-2">
             <Layers className="h-4 w-4" />
-            {t("modules")}
+            6 módulos
           </span>
           <span className="inline-flex items-center gap-2">
-            <Sparkles className="h-4 w-4" /> {t("immersions")}
+            <Sparkles className="h-4 w-4" /> 5 imersões
           </span>
           <span className="inline-flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -125,7 +122,7 @@ export default function LoginPage() {
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
-            {tCommon("backToSite")}
+            Voltar ao site
           </Link>
         </div>
 
@@ -134,12 +131,12 @@ export default function LoginPage() {
             <div className="relative mb-6 h-9 w-[220px]">
               <Image src={logoEsc} alt="Instituto ESC" fill className="object-contain" priority />
             </div>
-            <h1 className="font-heading text-3xl font-bold text-foreground">{t("welcome")}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{t("subtitle")}</p>
+            <h1 className="font-heading text-3xl font-bold text-foreground">Bem-vindo de volta</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Acesse seus cursos, a formação e as edições do PrevExperience.</p>
 
             <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="email">{t("email")}</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -147,7 +144,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t("emailPlaceholder")}
+                    placeholder="seuemail@exemplo.com"
                     className="pl-9"
                     required
                   />
@@ -155,7 +152,7 @@ export default function LoginPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="password">{t("password")}</Label>
+                <Label htmlFor="password">Senha</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -171,7 +168,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -186,10 +183,10 @@ export default function LoginPage() {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-border accent-primary"
                   />
-                  {t("rememberMe")}
+                  Manter conectado
                 </label>
                 <Link href="#" className="text-xs font-medium text-accent hover:underline">
-                  {t("forgotPassword")}
+                  Esqueci minha senha
                 </Link>
               </div>
 
@@ -202,18 +199,18 @@ export default function LoginPage() {
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {t("submitting")}
+                    Entrando...
                   </>
                 ) : (
                   <>
-                    {t("submit")} <ArrowRight className="h-4 w-4" />
+                    Entrar <ArrowRight className="h-4 w-4" />
                   </>
                 )}
               </Button>
             </form>
 
             <div className="mt-4 rounded-lg bg-muted/50 px-4 py-3 text-xs text-muted-foreground">
-              {t("prototypeNote")}
+              Protótipo — use qualquer e-mail e senha para entrar
             </div>
           </div>
         </div>

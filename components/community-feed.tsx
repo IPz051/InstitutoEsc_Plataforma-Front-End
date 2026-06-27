@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Heart, MessageCircle, Send, PlusCircle } from "lucide-react"
-import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,7 +11,6 @@ import { Separator } from "@/components/ui/separator"
 import { communityPosts, communityCategories, student, type CommunityPost } from "@/lib/mock-data"
 
 function PostCard({ post }: { post: CommunityPost }) {
-  const t = useTranslations()
   const [liked, setLiked] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const likeCount = post.likes + (liked ? 1 : 0)
@@ -62,7 +60,7 @@ function PostCard({ post }: { post: CommunityPost }) {
               <div className="mt-3 space-y-3">
                 <Separator />
                 {post.comments.length === 0 && (
-                  <p className="text-sm text-muted-foreground">{t("community.firstToComment")}</p>
+                  <p className="text-sm text-muted-foreground">Seja o primeiro a comentar.</p>
                 )}
                 {post.comments.map((c) => (
                   <div key={c.id} className="flex items-start gap-3">
@@ -89,7 +87,7 @@ function PostCard({ post }: { post: CommunityPost }) {
                   <div className="relative flex-1">
                     <input
                       type="text"
-                      placeholder={t("community.commentPlaceholder")}
+                      placeholder="Escreva um comentário..."
                       className="w-full rounded-full border border-input bg-background py-2 pl-4 pr-10 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     <Send className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -105,7 +103,6 @@ function PostCard({ post }: { post: CommunityPost }) {
 }
 
 export function CommunityFeed() {
-  const t = useTranslations()
   const [activeCategory, setActiveCategory] = useState("")
   const [composerOpen, setComposerOpen] = useState(false)
 
@@ -130,19 +127,19 @@ export function CommunityFeed() {
                   </AvatarFallback>
                 </Avatar>
                 <span className="flex-1 rounded-full bg-secondary px-4 py-2.5 text-sm text-muted-foreground">
-                  {t("community.postPrompt")}
+                  Compartilhe uma dúvida ou experiência...
                 </span>
               </button>
             ) : (
               <div className="space-y-3">
-                <Textarea placeholder={t("community.postPlaceholder")} rows={3} />
+                <Textarea placeholder="O que você quer compartilhar com a comunidade ESC?" rows={3} />
                 <div className="flex justify-end gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setComposerOpen(false)}>
-                    {t("common.cancel")}
+                    Cancelar
                   </Button>
                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <PlusCircle className="h-4 w-4" />
-                    {t("community.publish")}
+                    Publicar
                   </Button>
                 </div>
               </div>
@@ -158,7 +155,7 @@ export function CommunityFeed() {
             onClick={() => setActiveCategory("")}
             className={activeCategory === "" ? "bg-primary text-primary-foreground" : ""}
           >
-            {t("community.filterAll")}
+            Todos
           </Button>
           {communityCategories.map((cat) => (
             <Button
@@ -183,22 +180,22 @@ export function CommunityFeed() {
       <aside className="hidden lg:block">
         <Card className="sticky top-24">
           <CardContent className="p-5">
-            <h3 className="font-heading text-sm font-semibold text-foreground">{t("community.aboutTitle")}</h3>
+            <h3 className="font-heading text-sm font-semibold text-foreground">Sobre a Comunidade ESC</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {t("community.aboutDesc")}
+              Um espaço para alunos e ex-alunos trocarem experiências, tirarem dúvidas e se conectarem com a rede do Instituto ESC.
             </p>
             <Separator className="my-4" />
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">{t("community.members")}</span>
+                <span className="text-muted-foreground">Membros</span>
                 <span className="font-semibold text-foreground">3.482</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">{t("community.posts")}</span>
+                <span className="text-muted-foreground">Publicações</span>
                 <span className="font-semibold text-foreground">1.207</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">{t("community.onlineNow")}</span>
+                <span className="text-muted-foreground">Online agora</span>
                 <span className="font-semibold text-accent">128</span>
               </div>
             </div>

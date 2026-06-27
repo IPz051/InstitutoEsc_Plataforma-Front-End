@@ -13,7 +13,6 @@ import {
   Users,
 } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useTranslations } from "next-intl"
 import { AppNavbar } from "@/components/app-navbar"
 import { CourseCard } from "@/components/course-card"
 import { Progress } from "@/components/ui/progress"
@@ -23,10 +22,10 @@ import { cn } from "@/lib/utils"
 type Filter = "all" | "in-progress" | "completed"
 type Tab = "free" | "in-person"
 
-const filters: { id: Filter }[] = [
-  { id: "in-progress" },
-  { id: "completed" },
-  { id: "all" },
+const filters: { id: Filter; label: string }[] = [
+  { id: "in-progress", label: "Em andamento" },
+  { id: "completed", label: "Concluídos" },
+  { id: "all", label: "Todos" },
 ]
 
 const ITEMS_PER_PAGE = 3
@@ -44,7 +43,6 @@ export default function CoursesPage() {
 }
 
 function CoursesPageContent() {
-  const t = useTranslations()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [tab, setTab] = useState<Tab>(() => getTabFromSearchParams(searchParams.get("type")))
@@ -86,7 +84,7 @@ function CoursesPageContent() {
 
   return (
     <>
-      <AppNavbar title={t("courses.title")} />
+      <AppNavbar title="Cursos" />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <div className="flex flex-wrap items-center gap-2 rounded-full bg-white p-1.5 shadow-sm ring-1 ring-[#e7ecff]">
           <button
@@ -100,7 +98,7 @@ function CoursesPageContent() {
             )}
           >
             <Layers className="h-4 w-4" />
-            {t("courses.tabFree")}
+            Cursos Livres
           </button>
           <button
             type="button"
@@ -113,7 +111,7 @@ function CoursesPageContent() {
             )}
           >
             <Users className="h-4 w-4" />
-            {t("courses.tabInPerson")}
+            Cursos Presenciais
           </button>
         </div>
 
@@ -136,7 +134,7 @@ function CoursesPageContent() {
                         : "border-border bg-card text-muted-foreground hover:border-accent/40 hover:text-foreground",
                     )}
                   >
-                    {t(`enums.courseFilter.${f.id}` as Parameters<typeof t>[0])}
+                    {f.label}
                     <span
                       className={cn(
                         "rounded-full px-1.5 text-xs",
@@ -162,7 +160,7 @@ function CoursesPageContent() {
                       onClick={() => setPage((p) => Math.max(0, p - 1))}
                       disabled={page === 0}
                       className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                      aria-label={t("common.previous")}
+                      aria-label="Anterior"
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
@@ -171,7 +169,7 @@ function CoursesPageContent() {
                       onClick={() => setPage((p) => Math.min(pages.length - 1, p + 1))}
                       disabled={page === pages.length - 1}
                       className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                      aria-label={t("common.next")}
+                      aria-label="Próximo"
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
@@ -197,9 +195,9 @@ function CoursesPageContent() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
-                <p className="font-medium text-foreground">{t("courses.noCoursesFound")}</p>
+                <p className="font-medium text-foreground">Nenhum curso encontrado</p>
                 <p className="text-sm text-muted-foreground">
-                  {t("courses.noCoursesCategory")}
+                  Não há cursos nesta categoria no momento.
                 </p>
               </div>
             )}
@@ -217,10 +215,9 @@ function CoursesPageContent() {
 }
 
 function CoursesPageFallback() {
-  const t = useTranslations()
   return (
     <>
-      <AppNavbar title={t("courses.title")} />
+      <AppNavbar title="Cursos" />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <div className="h-13 rounded-full bg-white shadow-sm ring-1 ring-[#e7ecff]" />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -234,7 +231,6 @@ function CoursesPageFallback() {
 }
 
 function InPersonCourseCard({ course }: { course: InPersonCourse }) {
-  const t = useTranslations()
   const isAvailable = course.status === "in-progress"
 
   return (
@@ -244,7 +240,7 @@ function InPersonCourseCard({ course }: { course: InPersonCourse }) {
     >
       <div className="relative border-b border-dashed border-[#cfd8ff] bg-[#fbfcff]">
         <div className="absolute left-4 top-3 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-primary ring-1 ring-[#e7ecff]">
-          {isAvailable ? t("enums.inPersonStatus.in-progress") : t("enums.inPersonStatus.coming-soon")}
+          {isAvailable ? "Em andamento" : "Em breve"}
         </div>
         <div className="relative h-30 overflow-hidden border-x border-dashed border-[#cfd8ff]">
           <Image
@@ -276,10 +272,10 @@ function InPersonCourseCard({ course }: { course: InPersonCourse }) {
             {course.track} • {course.city}-{course.state}
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{t("courses.dateLabel")}</span> {course.date}
+            <span className="font-medium text-foreground">Data:</span> {course.date}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{t("courses.venueLabel")}</span> {course.venue}
+            <span className="font-medium text-foreground">Local:</span> {course.venue}
           </p>
         </div>
 
@@ -288,7 +284,7 @@ function InPersonCourseCard({ course }: { course: InPersonCourse }) {
             <div className="mb-2 flex items-center justify-between text-xs">
               <span className="text-muted-foreground">&nbsp;</span>
               <span className="font-medium text-muted-foreground">
-                {t("courses.lessonProgress", { completed: course.completedLessons ?? 0, total: course.totalLessons ?? 0 })}
+                {`${course.completedLessons ?? 0}/${course.totalLessons ?? 0} aulas`}
               </span>
             </div>
             <Progress value={course.progress ?? 0} className="h-1.5" />

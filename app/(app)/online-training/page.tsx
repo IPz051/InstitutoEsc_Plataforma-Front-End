@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { useTranslations } from "next-intl"
 import { AppNavbar } from "@/components/app-navbar"
 import { CourseCard } from "@/components/course-card"
 import { courses } from "@/lib/mock-data"
@@ -10,16 +9,15 @@ import { cn } from "@/lib/utils"
 
 type Filter = "all" | "in-progress" | "completed"
 
-const filters: { id: Filter }[] = [
-  { id: "in-progress" },
-  { id: "completed" },
-  { id: "all" },
+const filters: { id: Filter; label: string }[] = [
+  { id: "in-progress", label: "Em andamento" },
+  { id: "completed", label: "Concluídos" },
+  { id: "all", label: "Todos" },
 ]
 
 const ITEMS_PER_PAGE = 3
 
 export default function OnlineCoursesPage() {
-  const t = useTranslations()
   const [filter, setFilter] = useState<Filter>("all")
   const [page, setPage] = useState(0)
 
@@ -47,14 +45,14 @@ export default function OnlineCoursesPage() {
 
   return (
     <>
-      <AppNavbar title={t("onlineTraining.title")} />
+      <AppNavbar title="Formação Online" />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <div>
           <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
-            {t("onlineTraining.heading")}
+            Formação Online
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {t("onlineTraining.subtitle")}
+            Acompanhe sua trilha principal de formação com conteúdos, aulas e avaliações.
           </p>
         </div>
 
@@ -75,7 +73,7 @@ export default function OnlineCoursesPage() {
                     : "border-border bg-card text-muted-foreground hover:border-accent/40 hover:text-foreground",
                 )}
               >
-                {t(`enums.courseFilter.${filterItem.id}` as Parameters<typeof t>[0])}
+                {filterItem.label}
                 <span
                   className={cn(
                     "rounded-full px-1.5 text-xs",
@@ -101,7 +99,7 @@ export default function OnlineCoursesPage() {
                   onClick={() => setPage((currentPage) => Math.max(0, currentPage - 1))}
                   disabled={page === 0}
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                  aria-label={t("common.previous")}
+                  aria-label="Anterior"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
@@ -112,7 +110,7 @@ export default function OnlineCoursesPage() {
                   }
                   disabled={page === pages.length - 1}
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                  aria-label={t("common.next")}
+                  aria-label="Próximo"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
@@ -142,9 +140,9 @@ export default function OnlineCoursesPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
-            <p className="font-medium text-foreground">{t("courses.noCoursesFound")}</p>
+            <p className="font-medium text-foreground">Nenhum curso encontrado</p>
             <p className="text-sm text-muted-foreground">
-              {t("courses.noCoursesCategory")}
+              Não há cursos nesta categoria no momento.
             </p>
           </div>
         )}

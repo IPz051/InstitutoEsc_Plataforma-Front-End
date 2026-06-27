@@ -2,26 +2,24 @@
 
 import { Award, Download, Clock, CalendarCheck, Lock } from "lucide-react"
 import { toast } from "sonner"
-import { useTranslations } from "next-intl"
 import { AppNavbar } from "@/components/app-navbar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { certificates } from "@/lib/mock-data"
 
 export default function CertificatesPage() {
-  const t = useTranslations()
   const issued = certificates.filter((c) => c.status === "issued")
 
   return (
     <>
-      <AppNavbar title={t("certificates.title")} />
+      <AppNavbar title="Certificados" />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <div className="flex flex-col gap-1">
           <h2 className="font-heading text-xl font-semibold text-foreground">
-            {t("certificates.heading")}
+            Seus certificados
           </h2>
           <p className="text-sm text-muted-foreground">
-            {t("certificates.subtitle", { count: issued.length })}
+            {`${issued.length} certificados conquistados. Continue estudando para liberar novos.`}
           </p>
         </div>
 
@@ -40,7 +38,7 @@ export default function CertificatesPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs uppercase tracking-wide text-primary-foreground/60">
-                      {t("certificates.completionCertificate")}
+                      Certificado de Conclusão
                     </p>
                     <h3 className="truncate font-heading text-base font-bold">
                       {cert.courseTitle}
@@ -56,7 +54,7 @@ export default function CertificatesPage() {
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-muted-foreground">
                       <CalendarCheck className="h-4 w-4" />
-                      {isIssued ? t("certificates.issuedOn", { date: cert.issueDate }) : t("certificates.waitingCompletion")}
+                      {isIssued ? `Emitido em ${cert.issueDate}` : "Aguardando conclusão"}
                     </span>
                   </div>
 
@@ -66,11 +64,11 @@ export default function CertificatesPage() {
                         variant="outline"
                         className="border-accent/20 bg-accent/10 text-accent"
                       >
-                        {t("enums.certificateStatus.issued")}
+                        Emitido
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-muted-foreground">
-                        {t("enums.certificateStatus.pending")}
+                        Pendente
                       </Badge>
                     )}
 
@@ -78,18 +76,18 @@ export default function CertificatesPage() {
                       <Button
                         size="sm"
                         onClick={() =>
-                          toast.success(t("certificates.downloadStarted"), {
-                            description: t("certificates.downloadDesc", { title: cert.courseTitle }),
+                          toast.success("Download iniciado", {
+                            description: `Certificado de ${cert.courseTitle}`,
                           })
                         }
                       >
                         <Download className="h-4 w-4" />
-                        {t("certificates.download")}
+                        Baixar
                       </Button>
                     ) : (
                       <Button size="sm" variant="outline" disabled>
                         <Lock className="h-4 w-4" />
-                        {t("certificates.unavailable")}
+                        Indisponível
                       </Button>
                     )}
                   </div>

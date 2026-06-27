@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
-import { getTranslations } from "next-intl/server"
 import { AppNavbar } from "@/components/app-navbar"
 import { LessonView } from "@/components/lesson-view"
 import { getLessonContext } from "@/lib/mock-data"
@@ -11,7 +10,6 @@ export default async function OnlineLessonPage({
 }: {
   params: Promise<{ courseId: string; lessonId: string }>
 }) {
-  const t = await getTranslations()
   const { courseId, lessonId } = await params
   const context = getLessonContext(courseId, lessonId)
   if (!context) notFound()
@@ -25,7 +23,7 @@ export default async function OnlineLessonPage({
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          {t("lesson.backToCourse")}
+          Voltar ao curso
         </Link>
       </div>
       <LessonView

@@ -2,7 +2,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, CalendarDays, Clock3, GraduationCap, MapPin, PlayCircle, Users } from "lucide-react"
-import { getTranslations } from "next-intl/server"
 import { AppNavbar } from "@/components/app-navbar"
 import { ExpandableText } from "@/components/expandable-text"
 import { ProfessorTagCard } from "@/components/professor-tag-card"
@@ -22,7 +21,6 @@ export default async function InPersonCoursePage({
 }: {
   params: Promise<{ courseId: string }>
 }) {
-  const t = await getTranslations()
   const { courseId } = await params
   const course = getInPersonCourse(courseId)
   if (!course) notFound()
@@ -32,20 +30,20 @@ export default async function InPersonCoursePage({
 
   return (
     <>
-      <AppNavbar title={t("inPersonCourses.title")} />
+      <AppNavbar title="Cursos presenciais" />
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <Link
           href="/courses?type=in-person"
           className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          {t("inPersonCourses.back")}
+          Voltar para Cursos presenciais
         </Link>
 
         <section className="grid gap-6 rounded-2xl border border-border bg-card p-5 md:grid-cols-[1.6fr_1fr] md:p-6">
           <div className="flex flex-col">
             <Badge variant="outline" className="w-fit border-accent/20 bg-accent/10 text-accent">
-              {t("inPersonCourses.badge")}
+              Cursos presenciais
             </Badge>
             <h2 className="mt-3 font-heading text-2xl font-bold text-foreground text-balance">
               {course.title}
@@ -55,18 +53,18 @@ export default async function InPersonCoursePage({
             <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm">
               <div className="flex items-center gap-2 text-foreground">
                 <CalendarDays className="h-4 w-4 text-accent" />
-                <span>{meta?.date ?? t("inPersonCourses.dateTBC")}</span>
+                <span>{meta?.date ?? "Data a confirmar"}</span>
               </div>
               <div className="flex items-center gap-2 text-foreground">
                 <MapPin className="h-4 w-4 text-accent" />
-                <span>{meta?.venue ?? t("inPersonCourses.venueTBC")}</span>
+                <span>{meta?.venue ?? "Local a confirmar"}</span>
               </div>
             </div>
 
             <Button asChild size="lg" className="mt-6 w-fit">
               <Link href={`/in-person-courses/${course.id}/lesson/${firstLessonId}`}>
                 <PlayCircle className="h-4 w-4" />
-                {t("inPersonCourses.watchDemo")}
+                Assistir vídeo DEMO
               </Link>
             </Button>
           </div>
@@ -86,7 +84,7 @@ export default async function InPersonCoursePage({
 
         <section>
           <h3 className="mb-4 font-heading text-lg font-semibold text-foreground">
-            {t("inPersonCourses.courseInfo")}
+            Informações do curso
           </h3>
           <Accordion
             type={"multiple" as const}
@@ -101,13 +99,13 @@ export default async function InPersonCoursePage({
                   </span>
                   <div>
                     <p className="font-heading text-sm font-semibold text-foreground">
-                      {t("inPersonCourses.subject")}
+                      Matéria / Área do direito
                     </p>
                   </div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
-                <p className="text-sm leading-relaxed text-muted-foreground">{meta?.area ?? t("inPersonCourses.toDefine")}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">{meta?.area ?? "A definir"}</p>
               </AccordionContent>
             </AccordionItem>
 
@@ -118,7 +116,7 @@ export default async function InPersonCoursePage({
                     <Users className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="font-heading text-sm font-semibold text-foreground">{t("inPersonCourses.professors")}</p>
+                    <p className="font-heading text-sm font-semibold text-foreground">Professores</p>
                   </div>
                 </div>
               </AccordionTrigger>
@@ -134,7 +132,7 @@ export default async function InPersonCoursePage({
                   </div>
                 ) : (
                   <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
-                    {(meta?.professors?.length ? meta.professors : [t("inPersonCourses.toDefine")]).map((professor) => (
+                    {(meta?.professors?.length ? meta.professors : ["A definir"]).map((professor) => (
                       <li key={professor}>{professor}</li>
                     ))}
                   </ul>
@@ -149,12 +147,12 @@ export default async function InPersonCoursePage({
                     <Clock3 className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="font-heading text-sm font-semibold text-foreground">{t("inPersonCourses.duration")}</p>
+                    <p className="font-heading text-sm font-semibold text-foreground">Duração</p>
                   </div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
-                <p className="text-sm leading-relaxed text-muted-foreground">{meta?.duration ?? t("inPersonCourses.toDefine")}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">{meta?.duration ?? "A definir"}</p>
               </AccordionContent>
             </AccordionItem>
 
@@ -165,13 +163,13 @@ export default async function InPersonCoursePage({
                     <PlayCircle className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="font-heading text-sm font-semibold text-foreground">{t("inPersonCourses.methodology")}</p>
+                    <p className="font-heading text-sm font-semibold text-foreground">Metodologia / Módulos</p>
                   </div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
                 <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
-                  {(meta?.methodology?.length ? meta.methodology : [t("inPersonCourses.contentInProgress")]).map((item) => (
+                  {(meta?.methodology?.length ? meta.methodology : ["Conteúdo em definição"]).map((item) => (
                     <li key={item} className="whitespace-pre-line leading-relaxed">
                       {item}
                     </li>
