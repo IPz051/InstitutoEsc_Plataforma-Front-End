@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sidebar"
 import { student } from "@/lib/mock-data"
 import logoEsc from "@/public/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
+import { useAuthStore } from "@/stores/authStore"
 
 type NavItem = {
   title: string
@@ -62,6 +63,7 @@ const navItems: NavItem[] = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const logout = useAuthStore((state) => state.logout)
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -119,7 +121,7 @@ export function AppSidebar() {
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Sair" render={<Link href="/" />}>
+            <SidebarMenuButton tooltip="Sair" render={<Link href="/" />} onClick={logout}>
               <LogOut className="h-4 w-4" />
               <span>Sair</span>
             </SidebarMenuButton>
