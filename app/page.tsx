@@ -26,17 +26,16 @@ import pronoiaLogo from "@/public/logos/pronoia-logo-branco.png"
 export default function LoginPage() {
   const login = useAuthStore((s) => s.login)
   const loading = useAuthStore((s) => s.isLoading)
-  const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(true)
+  const [showPassword, setShowPassword] = useState(false)
   const landingPageHref =
     process.env.NEXT_PUBLIC_LANDING_URL?.replace(/\/$/, "") ?? "http://localhost:3001"
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     try {
-      await login({ email, password }, rememberMe)
+      await login({ email, password })
       // Full navigation (not pushState) so Firefox/Chrome password managers detect the login.
       window.location.href = "/dashboard"
     } catch {
@@ -179,16 +178,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-border accent-primary"
-                  />
-                  Manter conectado
-                </label>
+              <div className="flex items-center justify-end">
                 <Link href="#" className="text-xs font-medium text-accent hover:underline">
                   Esqueci minha senha
                 </Link>
@@ -212,10 +202,6 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-
-            <div className="mt-4 rounded-lg bg-muted/50 px-4 py-3 text-xs text-muted-foreground">
-              Protótipo — use qualquer e-mail e senha para entrar
-            </div>
           </div>
         </div>
       </section>

@@ -7,7 +7,13 @@ import {
 } from "@/lib/auth-tokens"
 import type { RefreshResponse } from "@/types"
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"
+const getApiUrl = () => {
+  const url = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"
+  return url.endsWith("/") ? url.slice(0, -1) : url
+}
+
+const BASE_URL = getApiUrl()
+
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -71,7 +77,7 @@ api.interceptors.response.use(
 
     try {
       const { data } = await axios.post<RefreshResponse>(
-        `${BASE_URL}/auth/refresh`,
+        `${BASE_URL}/api/auth/refresh`,
         { refreshToken }
       )
 

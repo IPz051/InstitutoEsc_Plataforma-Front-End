@@ -184,8 +184,8 @@ function CoursesPageContent() {
                     {pages.map((group, index) => (
                       <div key={index} className="w-full shrink-0">
                         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                          {group.map((course) => (
-                            <CourseCard key={course.id} course={course} basePath="/courses" />
+                          {group.map((course, idx) => (
+                            <CourseCard key={course.id} course={course} basePath="/courses" priority={index === 0 && idx < 3} />
                           ))}
                         </div>
                       </div>
@@ -204,8 +204,8 @@ function CoursesPageContent() {
           </>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {inPersonCourses.map((course) => (
-              <InPersonCourseCard key={course.id} course={course} />
+            {inPersonCourses.map((course, index) => (
+              <InPersonCourseCard key={course.id} course={course} priority={index < 3} />
             ))}
           </div>
         )}
@@ -230,7 +230,7 @@ function CoursesPageFallback() {
   )
 }
 
-function InPersonCourseCard({ course }: { course: InPersonCourse }) {
+function InPersonCourseCard({ course, priority = false }: { course: InPersonCourse; priority?: boolean }) {
   const isAvailable = course.status === "in-progress"
 
   return (
@@ -248,6 +248,7 @@ function InPersonCourseCard({ course }: { course: InPersonCourse }) {
             alt={course.title}
             fill
             className="object-cover"
+            priority={priority}
           />
         </div>
       </div>
