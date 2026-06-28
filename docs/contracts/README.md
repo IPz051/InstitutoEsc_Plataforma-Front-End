@@ -14,8 +14,15 @@ Each contract file is self-contained. This index holds the shared context.
 | `GET` | `/users/current` | Bearer accessToken | [`current.contract.md`](./user/current.contract.md) |
 | `POST` | `/courses` | Bearer accessToken (ADMIN) | [`create.contract.md`](./course/create.contract.md) |
 | `POST` | `/courses/{id}/files` | Bearer accessToken (ADMIN) | [`upload-file.contract.md`](./course/upload-file.contract.md) |
+| `POST` | `/courses/{id}/links` | Bearer accessToken (ADMIN) | [`add-link.contract.md`](./course/add-link.contract.md) |
 | `GET` | `/courses` | Bearer accessToken | [`list.contract.md`](./course/list.contract.md) |
 | `GET` | `/courses/{id}` | Bearer accessToken | [`get-by-id.contract.md`](./course/get-by-id.contract.md) |
+| `POST` | `/instructors` | Bearer accessToken (ADMIN) | [`create.contract.md`](./instructor/create.contract.md) |
+| `GET` | `/instructors` | Bearer accessToken | [`list.contract.md`](./instructor/list.contract.md) |
+| `GET` | `/instructors/{id}` | Bearer accessToken | [`get-by-id.contract.md`](./instructor/get-by-id.contract.md) |
+| `PUT` | `/instructors/{id}` | Bearer accessToken (ADMIN) | [`update.contract.md`](./instructor/update.contract.md) |
+| `DELETE` | `/instructors/{id}` | Bearer accessToken (ADMIN) | [`delete.contract.md`](./instructor/delete.contract.md) |
+| `GET` | `/enrollments/courses/{courseId}/access` | Bearer accessToken | [`check-course-access.contract.md`](./enrollment/check-course-access.contract.md) |
 
 ## General information
 

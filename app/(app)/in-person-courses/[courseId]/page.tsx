@@ -24,6 +24,8 @@ import { Badge } from "@/components/ui/badge"
 import { getInPersonProfessorTags } from "@/lib/in-person-professor-tags"
 import { getInPersonCourse, inPersonCourses } from "@/lib/mock-data"
 import { getCourseById } from "@/services/courses/coursesService"
+import { checkCourseAccess } from "@/services/enrollments/enrollmentsService"
+import { useAuthStore } from "@/stores/authStore"
 import type { CourseDetailResponse, InstructorDetailResponse } from "@/types"
 
 function formatDate(dateStr: string) {
@@ -56,6 +58,9 @@ export default function InPersonCoursePage({
   const [mockCourse, setMockCourse] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [isFallback, setIsFallback] = useState(false)
+  const [isEnrolled, setIsEnrolled] = useState(false)
+  
+  const { isAuthenticated } = useAuthStore()
 
   useEffect(() => {
     async function loadCourse() {
@@ -88,6 +93,21 @@ export default function InPersonCoursePage({
 
     loadCourse()
   }, [courseId])
+
+  useEffect(() => {
+    async function verifyEnrollment() {
+      if (!isAuthenticated) return
+      try {
+        const access = await checkCourseAccess(courseId)
+        const enrolled = access.status === "ATIVA" || access.status === "CONCLUIDA" || access.status === "PENDENTE"
+        setIsEnrolled(enrolled)
+      } catch (error) {
+        console.error("Failed to check course enrollment access:", error)
+      }
+    }
+
+    verifyEnrollment()
+  }, [courseId, isAuthenticated])
 
   if (loading) {
     return (
@@ -236,8 +256,8 @@ export default function InPersonCoursePage({
                   {priceText}
                 </span>
               </div>
-              <Button size="lg" className="px-8">
-                Inscrever-se
+              <Button size="lg" className="px-8" disabled={isEnrolled}>
+                {isEnrolled ? "Inscrito" : "Inscrever-se"}
               </Button>
             </div>
           </div>

@@ -1,6 +1,6 @@
-# API Contract — `GET /courses/{id}`
+# API Contract — `POST /courses/{id}/links`
 
-Retrieves details of a specific course, including its links and uploaded files, by its unique ID.
+Adds an external link (e.g. slides, documentation, reference material) to an existing course and returns the updated course representation, including all of its links, files and details.
 
 > Shared context (base URL, auth model, error shape): see [`README.md`](../README.md).
 
@@ -8,26 +8,44 @@ Retrieves details of a specific course, including its links and uploaded files, 
 
 | Item | Value |
 |------|-------|
-| Method / Path | `GET /courses/{id}` |
+| Method / Path | `POST /courses/{id}/links` |
 | Base URL (local) | `http://localhost:8080/api` |
-| Auth required | **Yes** — valid accessToken (any role) |
+| Auth required | **Yes** — valid accessToken with role `ADMIN` |
 | Path parameters | `id` (UUID) - Unique course identifier |
 | Query parameters | None |
-| Request body | None |
+| Request body | `application/json` |
 
 ## Path Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `id` | string (UUID) | **Yes** | The UUID of the course to retrieve. |
+| `id` | string (UUID) | **Yes** | The UUID of the course to which the link will be added. |
 
 ## Request headers
 
 | Header | Value | Required |
 |--------|-------|----------|
 | `Authorization` | `Bearer <accessToken>` | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+## Request body
+
+```json
+{
+  "title": "Course Slides",
+  "url": "https://example.com/slides"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string (UUID) | No | Ignored on creation. The server always generates a new link ID. Safe to omit. |
+| `title` | string | **Yes** | Display title of the link. Must not be blank. |
+| `url` | string | **Yes** | Target URL of the link. Must not be blank. |
 
 ## Success response — `200 OK`
+
+Returns the full, updated course representation with the newly added link present in the `links` array.
 
 ```json
 {
@@ -117,13 +135,46 @@ Retrieves details of a specific course, including its links and uploaded files, 
 
 | Status | When | Body |
 |--------|------|------|
-| `400 Bad Request` | Invalid UUID format for `{id}` | `ErrorResponse` with details on failed value conversion |
-| `403 Forbidden` | Access token missing, invalid, or expired | Empty or standard 403 response |
+| `400 Bad Request` | Invalid UUID format for `{id}` | `ErrorResponse` with detail on failed value conversion |
+| `403 Forbidden` | Access token missing, invalid, expired, or user doesn't have the `ADMIN` role | Empty or standard 403 response |
 | `404 Not Found` | Course with the specified `{id}` does not exist | `ErrorResponse` with `error: "Recurso não encontrado"` and message: `"Course não encontrado com o ID: <id>"` |
+| `500 Internal Server Error` | A required field is missing/blank (`title`, `url`) or the request body is malformed/missing | `ErrorResponse` with `error: "Internal server error"`. Bean Validation and body-binding failures are not mapped to `400` by the current global handler — they fall through to the generic `500` handler. |
 
-## Example
+Example of a `404` error body:
+
+```json
+{
+  "timestamp": "2026-06-28T14:30:00.123",
+  "status": 404,
+  "error": "Recurso não encontrado",
+  "message": "Course não encontrado com o ID: 8f73b982-61b6-40a7-8f73-b9826a9a4542"
+}
+```
+
+## Examples
+
+### Example 1 — Adding a link to a course
 
 ```http
-GET http://localhost:8080/api/courses/8f73b982-61b6-40a7-8f73-b9826a9a4542
-Authorization: Bearer YOUR_ACCESS_TOKEN_HERE
+POST http://localhost:8080/api/courses/8f73b982-61b6-40a7-8f73-b9826a9a4542/links
+Authorization: Bearer ADMIN_ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "title": "Course Slides",
+  "url": "https://example.com/slides"
+}
+```
+
+### Example 2 — Adding a documentation reference link
+
+```http
+POST http://localhost:8080/api/courses/8f73b982-61b6-40a7-8f73-b9826a9a4542/links
+Authorization: Bearer ADMIN_ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "title": "Java Documentation",
+  "url": "https://docs.oracle.com/en/java/"
+}
 ```

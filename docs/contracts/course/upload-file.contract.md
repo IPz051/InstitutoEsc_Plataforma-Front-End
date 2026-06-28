@@ -62,6 +62,7 @@ Returns the updated course representation with the newly added file.
   "thumbnailUrl": "http://localhost:9000/coursefiles/courses/thumbnails/turing-course.png",
   "links": [
     {
+      "id": "1c9d2e6f-3a4b-4c5d-8e7f-0a1b2c3d4e5f",
       "title": "Course Slides",
       "url": "https://example.com/slides"
     }
@@ -105,7 +106,8 @@ Returns the updated course representation with the newly added file.
 | `instructors[].description` | string | Instructor description (can be null) |
 | `instructors[].profileImageUrl` | string (URL) | Instructor profile image URL (can be null) |
 | `thumbnailUrl` | string (URL) | Public URL of the uploaded thumbnail image (can be null) |
-| `links` | array (object) | Associated links for this course |
+| `links` | array (object) | Associated links for this course. Empty array if none. |
+| `links[].id` | string (UUID) | Unique identifier of the link |
 | `links[].title` | string | Title of the link |
 | `links[].url` | string | URL link target |
 | `files` | array (object) | List of uploaded files associated with this course |

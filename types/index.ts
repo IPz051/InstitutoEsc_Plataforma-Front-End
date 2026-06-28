@@ -100,4 +100,13 @@ export interface InstructorDetailResponse {
   profileImageUrl: string | null
 }
 
+export type EnrollmentStatus = "PENDENTE" | "ATIVA" | "CONCLUIDA" | "CANCELADA" | "REEMBOLSADA"
+
+export interface CourseAccessResponse {
+  courseId: string
+  hasAccess: boolean
+  status: EnrollmentStatus | null
+}
+
+
 
