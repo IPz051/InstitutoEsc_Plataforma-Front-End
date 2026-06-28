@@ -2,14 +2,14 @@
 
 Authenticates a user with email + password and returns a JWT token pair.
 
-> Shared context (base URL, auth model, error shape): see [`README.md`](./README.md).
+> Shared context (base URL, auth model, error shape): see [`README.md`](../README.md).
 
 ## Summary
 
 | Item | Value |
 |------|-------|
 | Method / Path | `POST /auth/login` |
-| Base URL (local) | `http://localhost:8080` |
+| Base URL (local) | `http://localhost:8080/api` |
 | Auth required | No (public endpoint) |
 | Path / query params | None |
 
@@ -49,16 +49,26 @@ Authenticates a user with email + password and returns a JWT token pair.
 
 ## Error responses
 
-| Status | When | Body |
-|--------|------|------|
-| `500 Internal Server Error` | Invalid credentials (wrong password or unknown email) | `ErrorResponse` with `error: "Erro interno do servidor"` |
+| Status | When | Body (`error` / `message`) |
+|--------|------|-----------------------------|
+| `401 Unauthorized` | Invalid credentials (wrong password or unregistered email) | `"Unauthorized"` / `"Email or password is incorrect"` |
+| `403 Forbidden` | User account is disabled (`active = false`) | `"Forbidden"` / `"User account is disabled"` |
 
-> ⚠️ **Known limitation:** invalid credentials currently produce `500`, not `401`. There is no dedicated handler for Spring Security's `AuthenticationException`, so it falls through to the generic handler. **Treat any non-`200` response as a failed login** and do not rely on the specific status until this is fixed server-side.
+Example error body (401):
+
+```json
+{
+  "timestamp": "2026-06-26T14:30:00.123",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Email or password is incorrect"
+}
+```
 
 ## Example
 
 ```http
-POST http://localhost:8080/auth/login
+POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {

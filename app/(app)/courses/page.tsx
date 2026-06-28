@@ -98,7 +98,7 @@ function CoursesPageContent() {
             )}
           >
             <Layers className="h-4 w-4" />
-            Cursos Livres
+            Cursos Online
           </button>
           <button
             type="button"

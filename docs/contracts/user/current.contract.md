@@ -2,14 +2,14 @@
 
 Returns the profile of the user identified by the accessToken in the request. The server reads the email (subject) from the token, loads the user from the database, and returns it.
 
-> Shared context (base URL, auth model, error shape): see [`README.md`](./README.md).
+> Shared context (base URL, auth model, error shape): see [`README.md`](../README.md).
 
 ## Summary
 
 | Item | Value |
 |------|-------|
 | Method / Path | `GET /users/current` |
-| Base URL (local) | `http://localhost:8080` |
+| Base URL (local) | `http://localhost:8080/api` |
 | Auth required | **Yes** — valid accessToken |
 | Path / query params | None |
 | Request body | None |
@@ -57,6 +57,6 @@ Returns the profile of the user identified by the accessToken in the request. Th
 ## Example
 
 ```http
-GET http://localhost:8080/users/current
+GET http://localhost:8080/api/users/current
 Authorization: Bearer YOUR_ACCESS_TOKEN_HERE
 ```

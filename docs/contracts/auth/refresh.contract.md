@@ -2,14 +2,14 @@
 
 Exchanges a valid refreshToken for a new accessToken. Does **not** issue a new refreshToken (no rotation) — the original refreshToken stays valid until it expires.
 
-> Shared context (base URL, auth model, error shape): see [`README.md`](./README.md).
+> Shared context (base URL, auth model, error shape): see [`README.md`](../README.md).
 
 ## Summary
 
 | Item | Value |
 |------|-------|
 | Method / Path | `POST /auth/refresh` |
-| Base URL (local) | `http://localhost:8080` |
+| Base URL (local) | `http://localhost:8080/api` |
 | Auth required | No bearer header (the refreshToken is sent in the body, not the `Authorization` header) |
 | Path / query params | None |
 
@@ -65,7 +65,7 @@ Example error body:
 ## Example
 
 ```http
-POST http://localhost:8080/auth/refresh
+POST http://localhost:8080/api/auth/refresh
 Content-Type: application/json
 
 {
