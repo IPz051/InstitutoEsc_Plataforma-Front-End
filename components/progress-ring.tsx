@@ -1,15 +1,23 @@
+import { cn } from "@/lib/utils"
+
 export function ProgressRing({
   value,
   size = 120,
   strokeWidth = 10,
   label,
   sublabel,
+  strokeClass = "stroke-accent",
+  labelClass = "text-foreground",
+  sublabelClass = "text-muted-foreground",
 }: {
   value: number
   size?: number
   strokeWidth?: number
   label?: string
   sublabel?: string
+  strokeClass?: string
+  labelClass?: string
+  sublabelClass?: string
 }) {
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
@@ -38,18 +46,18 @@ export function ProgressRing({
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className="stroke-accent transition-all duration-700"
+          className={cn("transition-all duration-700", strokeClass)}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="font-heading font-bold leading-none text-foreground"
+          className={cn("font-heading font-bold leading-none", labelClass)}
           style={{ fontSize: `${labelFontSize}px` }}
         >
           {labelText}
         </span>
         {sublabel && (
-          <span className="text-muted-foreground" style={{ fontSize: `${sublabelFontSize}px` }}>
+          <span className={cn(sublabelClass)} style={{ fontSize: `${sublabelFontSize}px` }}>
             {sublabel}
           </span>
         )}
@@ -57,3 +65,4 @@ export function ProgressRing({
     </div>
   )
 }
+
