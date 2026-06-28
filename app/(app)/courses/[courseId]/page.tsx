@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { getFreeCourse } from "@/lib/mock-data"
 import { getCourseById } from "@/services/courses/coursesService"
-import { getInstructorById } from "@/services/instructors/instructorsService"
 import type { CourseDetailResponse, InstructorDetailResponse } from "@/types"
 
 export default function CoursePage({
@@ -31,7 +30,6 @@ export default function CoursePage({
 }) {
   const { courseId } = use(params)
   const [course, setCourse] = useState<CourseDetailResponse | null>(null)
-  const [instructor, setInstructor] = useState<InstructorDetailResponse | null>(null)
   const [mockCourse, setMockCourse] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [isFallback, setIsFallback] = useState(false)
@@ -43,16 +41,6 @@ export default function CoursePage({
         // Call the API endpoint GET /courses/{id} from the contract
         const data = await getCourseById(courseId)
         setCourse(data)
-        
-        // Fetch instructor data if instructorId is returned by the course details endpoint
-        if (data.instructorId) {
-          try {
-            const instData = await getInstructorById(data.instructorId)
-            setInstructor(instData)
-          } catch (instErr) {
-            console.warn(`Failed to load instructor ${data.instructorId}:`, instErr)
-          }
-        }
         
         // Also fetch local mock data to combine modules/lessons if available
         const localMock = getFreeCourse(courseId)
@@ -186,27 +174,29 @@ export default function CoursePage({
             </div>
 
             <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm">
-              {/* Professor: Real if instructor exists, otherwise Mocked in red */}
-              {instructor ? (
-                <div className="flex items-center gap-2 text-foreground">
-                  {instructor.profileImageUrl ? (
-                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-border">
-                      <Image
-                        src={instructor.profileImageUrl}
-                        alt={instructor.name}
-                        fill
-                        sizes="32px"
-                        className="object-cover"
-                      />
+              {/* Professor: Real if instructors exist, otherwise Mocked in red */}
+              {course?.instructors && course.instructors.length > 0 ? (
+                course.instructors.map((inst) => (
+                  <div key={inst.id} className="flex items-center gap-2 text-foreground">
+                    {inst.profileImageUrl ? (
+                      <div className="relative h-8 w-8 overflow-hidden rounded-full border border-border">
+                        <Image
+                          src={inst.profileImageUrl}
+                          alt={inst.name}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <User className="h-4 w-4 text-accent" />
+                    )}
+                    <div className="leading-tight">
+                      <p className="font-medium text-foreground">{inst.name}</p>
+                      <p className="text-xs text-muted-foreground">{inst.description || "Instrutor"}</p>
                     </div>
-                  ) : (
-                    <User className="h-4 w-4 text-accent" />
-                  )}
-                  <div className="leading-tight">
-                    <p className="font-medium text-foreground">{instructor.name}</p>
-                    <p className="text-xs text-muted-foreground">{instructor.description || "Instrutor"}</p>
                   </div>
-                </div>
+                ))
               ) : (
                 <div className="flex items-center gap-2 text-foreground">
                   <User className="h-4 w-4 text-red-500" />

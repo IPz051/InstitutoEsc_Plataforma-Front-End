@@ -39,7 +39,14 @@ Retrieves details of a specific course, including its links and uploaded files, 
   "active": true,
   "price": 499.00,
   "duration": "16 hours",
-  "instructorId": "9d787ce5-f0dd-47b1-86d3-645dbf70079a",
+  "instructors": [
+    {
+      "id": "9d787ce5-f0dd-47b1-86d3-645dbf70079a",
+      "name": "Alan Turing",
+      "description": "Pioneiro da ciência da computação.",
+      "profileImageUrl": "http://localhost:9000/coursefiles/instructors/turing.png"
+    }
+  ],
   "thumbnailUrl": "http://localhost:9000/coursefiles/courses/thumbnails/turing-course.png",
   "links": [
     {
@@ -80,7 +87,11 @@ Retrieves details of a specific course, including its links and uploaded files, 
 | `active` | boolean | Whether the course is active |
 | `price` | number (decimal) | Price of the course (can be null) |
 | `duration` | string | Course duration (can be null) |
-| `instructorId` | string (UUID) | Unique instructor identifier (can be null) |
+| `instructors` | array (object) | Instructors assigned to this course. Empty array if none. |
+| `instructors[].id` | string (UUID) | Unique instructor identifier |
+| `instructors[].name` | string | Instructor name |
+| `instructors[].description` | string | Instructor description (can be null) |
+| `instructors[].profileImageUrl` | string (URL) | Instructor profile image URL (can be null) |
 | `thumbnailUrl` | string (URL) | Public URL of the course thumbnail image (can be null) |
 | `links` | array (object) | Associated external links for this course |
 | `links[].title` | string | Title of the link |

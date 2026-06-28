@@ -75,7 +75,7 @@ export interface CourseDetailResponse {
   active: boolean
   price: number | null
   duration: string | null
-  instructorId: string | null
+  instructors: InstructorDetailResponse[]
   thumbnailUrl: string | null
   links: CourseLink[]
   files: CourseFile[]

@@ -35,7 +35,7 @@ This endpoint accepts form data fields and a file payload.
 | `active` | boolean | No | Course status (defaults to server-side logic/database default if null). |
 | `price` | number (decimal) | No | Price of the course. |
 | `duration` | string | No | Duration of the course (e.g. `"20 hours"`). |
-| `instructorId` | string (UUID) | No | Instructor ID. If provided, the instructor must exist. |
+| `instructorIds` | array of string (UUID) | No | Zero or more instructor IDs. Repeat the field once per instructor (e.g. multiple `instructorIds` form parts). Every provided instructor must exist. |
 | `thumbnail` | binary (file) | **Yes** | Thumbnail image file to be uploaded to storage. |
 | `addressStreet` | string | No | Street address (applicable only for `IN_PERSON` courses). |
 | `addressCity` | string | No | City (applicable only for `IN_PERSON` courses). |
@@ -81,7 +81,7 @@ This endpoint accepts form data fields and a file payload.
 | `400 Bad Request` | Course name already exists | `ErrorResponse` with `error: "Erro de regra de negócio"` and message: `"A course with this name already exists."` |
 | `403 Forbidden` | Access token missing, invalid, expired, or user doesn't have the `ADMIN` role | Empty or standard 403 response. |
 | `404 Not Found` | Parent formation with the specified `formationId` does not exist | `ErrorResponse` with `error: "Recurso não encontrado"` and message: `"Formação não encontrada com o ID: <formationId>"` |
-| `404 Not Found` | Instructor with the specified `instructorId` does not exist | `ErrorResponse` with `error: "Recurso não encontrado"` and message: `"Instructor not found with id: <instructorId>"` |
+| `404 Not Found` | Any instructor in `instructorIds` does not exist | `ErrorResponse` with `error: "Recurso não encontrado"` and message: `"Instructor not found with id: <instructorId>"` |
 | `500 Internal Server Error` | A required field is missing/blank (`name`, `category`, `type`), the `thumbnail` file part is missing, the `category`/`type` enum value is invalid, or a field value is malformed (e.g. non-numeric `price`) | `ErrorResponse` with `error: "Internal server error"`. Bean Validation, binding, missing-part and illegal-argument failures are not mapped to `400` by the current global handler — they fall through to the generic `500` handler. |
 
 ## Examples
@@ -126,7 +126,7 @@ Content-Disposition: form-data; name="duration"
 
 40 hours
 --boundary123
-Content-Disposition: form-data; name="instructorId"
+Content-Disposition: form-data; name="instructorIds"
 
 9d787ce5-f0dd-47b1-86d3-645dbf70079a
 --boundary123
@@ -173,9 +173,13 @@ Content-Disposition: form-data; name="duration"
 
 16 hours
 --boundary123
-Content-Disposition: form-data; name="instructorId"
+Content-Disposition: form-data; name="instructorIds"
 
 9d787ce5-f0dd-47b1-86d3-645dbf70079a
+--boundary123
+Content-Disposition: form-data; name="instructorIds"
+
+3b2e1a47-8c0d-4f6a-9b21-7d5e0c9a1f88
 --boundary123
 Content-Disposition: form-data; name="addressStreet"
 
