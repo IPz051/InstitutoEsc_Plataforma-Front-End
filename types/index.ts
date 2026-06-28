@@ -93,3 +93,11 @@ export interface PaginatedResponse<T> {
   empty: boolean
 }
 
+export interface InstructorDetailResponse {
+  id: string
+  name: string
+  description: string | null
+  profileImageUrl: string | null
+}
+
+

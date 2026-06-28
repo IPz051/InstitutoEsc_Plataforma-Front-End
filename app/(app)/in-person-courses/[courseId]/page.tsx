@@ -30,7 +30,8 @@ import {
 import { getInPersonProfessorTags } from "@/lib/in-person-professor-tags"
 import { getInPersonCourse, inPersonCourses } from "@/lib/mock-data"
 import { getCourseById } from "@/services/courses/coursesService"
-import type { CourseDetailResponse } from "@/types"
+import { getInstructorById } from "@/services/instructors/instructorsService"
+import type { CourseDetailResponse, InstructorDetailResponse } from "@/types"
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -49,6 +50,7 @@ export default function InPersonCoursePage({
 }) {
   const { courseId } = use(params)
   const [course, setCourse] = useState<CourseDetailResponse | null>(null)
+  const [instructor, setInstructor] = useState<InstructorDetailResponse | null>(null)
   const [mockCourse, setMockCourse] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [isFallback, setIsFallback] = useState(false)
@@ -60,6 +62,16 @@ export default function InPersonCoursePage({
         // Fetch from API contract GET /courses/{id}
         const data = await getCourseById(courseId)
         setCourse(data)
+        
+        // Fetch instructor data if instructorId is returned by the course details endpoint
+        if (data.instructorId) {
+          try {
+            const instData = await getInstructorById(data.instructorId)
+            setInstructor(instData)
+          } catch (instErr) {
+            console.warn(`Failed to load instructor ${data.instructorId}:`, instErr)
+          }
+        }
         
         // Also fetch local metadata to combine if available
         const localMock = getInPersonCourse(courseId)
@@ -291,22 +303,47 @@ export default function InPersonCoursePage({
               </AccordionContent>
             </AccordionItem>
 
-            {/* Professors: Mocked in red */}
-            <AccordionItem value="professores" className="overflow-hidden rounded-xl border border-red-200 bg-card">
-              <AccordionTrigger className="px-4 py-3 hover:no-underline text-red-500">
+            {/* Professors: Real if instructor exists, otherwise Mocked in red */}
+            <AccordionItem
+              value="professores"
+              className={`overflow-hidden rounded-xl border bg-card ${instructor ? "border-border" : "border-red-200"}`}
+            >
+              <AccordionTrigger className={`px-4 py-3 hover:no-underline ${instructor ? "text-foreground" : "text-red-500"}`}>
                 <div className="flex flex-1 items-center gap-3 text-left">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-500 text-white">
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${instructor ? "bg-primary text-primary-foreground" : "bg-red-500 text-white"}`}>
                     <Users className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="font-heading text-sm font-semibold text-red-500">
-                      Professores <span className="text-xs font-normal opacity-85">(Mock)</span>
+                    <p className="font-heading text-sm font-semibold">
+                      Professores {!instructor && <span className="text-xs font-normal opacity-85">(Mock)</span>}
                     </p>
                   </div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
-                {professorTags?.length ? (
+                {instructor ? (
+                  <div className="flex items-center gap-4 rounded-xl border border-border bg-secondary/10 p-4">
+                    {instructor.profileImageUrl ? (
+                      <div className="relative h-16 w-16 overflow-hidden rounded-full border border-border bg-card">
+                        <Image
+                          src={instructor.profileImageUrl}
+                          alt={instructor.name}
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/15 text-accent">
+                        <Users className="h-8 w-8" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <p className="font-heading text-base font-semibold text-foreground">{instructor.name}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{instructor.description || "Professor principal do curso."}</p>
+                    </div>
+                  </div>
+                ) : professorTags?.length ? (
                   <div className="flex flex-col gap-3 border border-red-100 p-3 rounded-lg bg-red-50/10">
                     {professorTags.map((professor) => (
                       <ProfessorTagCard
