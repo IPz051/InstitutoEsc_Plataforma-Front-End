@@ -16,22 +16,49 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { AppNavbar } from "@/components/app-navbar"
 import { CourseCard } from "@/components/course-card"
 import { Progress } from "@/components/ui/progress"
-import { freeCourses, inPersonCourses, type InPersonCourse } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
+import type { InPersonCourse } from "@/lib/mock-data"
+import { listCourses } from "@/services/courses/coursesService"
+import type { CourseSummary } from "@/types"
 
-type Filter = "all" | "in-progress" | "completed"
 type Tab = "free" | "in-person"
-
-const filters: { id: Filter; label: string }[] = [
-  { id: "in-progress", label: "Em andamento" },
-  { id: "completed", label: "Concluídos" },
-  { id: "all", label: "Todos" },
-]
-
-const ITEMS_PER_PAGE = 3
 
 function getTabFromSearchParams(selectedTab: string | null): Tab {
   return selectedTab === "in-person" ? "in-person" : "free"
+}
+
+function formatInPersonCourse(course: CourseSummary): InPersonCourse {
+  return {
+    id: course.id,
+    title: course.name,
+    thumbnail: course.thumbnailUrl || "/placeholder.svg",
+    city: "",
+    state: "",
+    venue: "",
+    date: "",
+    month: "",
+    year: "",
+    status: "in-progress",
+    track: course.category === "FORMACAO" ? "Formação" : "Curso Livre",
+    availableLabel: "Inscrições abertas",
+    completedLessons: 0,
+    totalLessons: 0,
+    progress: 0,
+  }
+}
+
+function formatOnlineCourse(course: CourseSummary) {
+  return {
+    id: course.id,
+    title: course.name,
+    shortDescription: course.description || "",
+    category: course.category === "FORMACAO" ? "Formação" : "Curso Livre",
+    thumbnail: course.thumbnailUrl || "/placeholder.svg",
+    status: "not-started" as const,
+    progress: 0,
+    totalLessons: 0,
+    workload: "",
+  }
 }
 
 export default function CoursesPage() {
@@ -46,8 +73,10 @@ function CoursesPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [tab, setTab] = useState<Tab>(() => getTabFromSearchParams(searchParams.get("type")))
-  const [filter, setFilter] = useState<Filter>("all")
   const [page, setPage] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [courses, setCourses] = useState<CourseSummary[]>([])
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     setTab(getTabFromSearchParams(searchParams.get("type")))
@@ -55,32 +84,53 @@ function CoursesPageContent() {
 
   const handleTabChange = (nextTab: Tab) => {
     setTab(nextTab)
+    setPage(0)
     const params = new URLSearchParams(searchParams.toString())
     params.set("type", nextTab)
     router.replace(`/courses?${params.toString()}`)
   }
 
-  const filtered = freeCourses.filter((c) => {
-    if (filter === "all") return true
-    return c.status === filter
-  })
+  const handlePrevPage = () => {
+    setPage((p) => {
+      const prev = p - 1
+      return prev >= 0 ? prev : 0
+    })
+  }
 
-  const pages: typeof filtered[] = []
-  for (let i = 0; i < filtered.length; i += ITEMS_PER_PAGE) {
-    pages.push(filtered.slice(i, i + ITEMS_PER_PAGE))
+  const handleNextPage = () => {
+    setPage((p) => {
+      const next = p + 1
+      return next < totalPages ? next : p
+    })
   }
 
   useEffect(() => {
-    setPage(0)
-  }, [filter, tab])
+    let active = true
 
-  useEffect(() => {
-    if (pages.length === 0) {
-      if (page !== 0) setPage(0)
-      return
+    async function loadData() {
+      setLoading(true)
+      try {
+        const typeParam = tab === "free" ? "ONLINE" : "IN_PERSON"
+        // 3 items per page as requested: "coloque 3 itens por paginação"
+        const data = await listCourses({ type: typeParam, page, size: 3 })
+        if (!active) return
+
+        setCourses(data.content || [])
+        setTotalPages(typeof data.totalPages === "number" ? Math.max(1, data.totalPages) : 1)
+      } catch (error) {
+        console.error("Failed to load courses:", error)
+      } finally {
+        if (active) {
+          setLoading(false)
+        }
+      }
     }
-    if (page > pages.length - 1) setPage(pages.length - 1)
-  }, [page, pages.length])
+
+    loadData()
+    return () => {
+      active = false
+    }
+  }, [tab, page])
 
   return (
     <>
@@ -115,98 +165,69 @@ function CoursesPageContent() {
           </button>
         </div>
 
-        {tab === "free" ? (
-          <>
-            <div className="flex flex-wrap gap-2">
-              {filters.map((f) => {
-                const count =
-                  f.id === "all"
-                    ? freeCourses.length
-                    : freeCourses.filter((c) => c.status === f.id).length
-                return (
-                  <button
-                    key={f.id}
-                    onClick={() => setFilter(f.id)}
-                    className={cn(
-                      "inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
-                      filter === f.id
-                        ? "border-accent bg-accent text-accent-foreground"
-                        : "border-border bg-card text-muted-foreground hover:border-accent/40 hover:text-foreground",
-                    )}
-                  >
-                    {f.label}
-                    <span
-                      className={cn(
-                        "rounded-full px-1.5 text-xs",
-                        filter === f.id ? "bg-accent-foreground/20" : "bg-secondary",
-                      )}
-                    >
-                      {count}
-                    </span>
-                  </button>
-                )
-              })}
+        {loading ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="h-72 rounded-2xl bg-white shadow-sm ring-1 ring-[#e7ecff] animate-pulse bg-muted/20" />
+            ))}
+          </div>
+        ) : courses.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-muted-foreground">
+                Página {page + 1} de {totalPages}
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrevPage}
+                  disabled={page <= 0}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextPage}
+                  disabled={page >= totalPages - 1}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                  aria-label="Próximo"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
             </div>
 
-            {pages.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {page + 1} / {pages.length}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPage((p) => Math.max(0, p - 1))}
-                      disabled={page === 0}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                      aria-label="Anterior"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPage((p) => Math.min(pages.length - 1, p + 1))}
-                      disabled={page === pages.length - 1}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-muted-foreground shadow-sm ring-1 ring-[#e7ecff] transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                      aria-label="Próximo"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="overflow-hidden">
-                  <div
-                    className="flex transition-transform duration-300 ease-in-out"
-                    style={{ transform: `translateX(-${page * 100}%)` }}
-                  >
-                    {pages.map((group, index) => (
-                      <div key={index} className="w-full shrink-0">
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                          {group.map((course, idx) => (
-                            <CourseCard key={course.id} course={course} basePath="/courses" priority={index === 0 && idx < 3} />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            {tab === "free" ? (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {courses.map((course, idx) => (
+                  <CourseCard
+                    key={course.id}
+                    course={formatOnlineCourse(course)}
+                    basePath="/courses"
+                    priority={idx < 3}
+                  />
+                ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
-                <p className="font-medium text-foreground">Nenhum curso encontrado</p>
-                <p className="text-sm text-muted-foreground">
-                  Não há cursos nesta categoria no momento.
-                </p>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {courses.map((course, idx) => (
+                  <InPersonCourseCard
+                    key={course.id}
+                    course={formatInPersonCourse(course)}
+                    priority={idx < 3}
+                  />
+                ))}
               </div>
             )}
-          </>
+          </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {inPersonCourses.map((course, index) => (
-              <InPersonCourseCard key={course.id} course={course} priority={index < 3} />
-            ))}
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
+            <p className="font-medium text-foreground">Nenhum curso encontrado</p>
+            <p className="text-sm text-muted-foreground">
+              Não há cursos nesta categoria no momento.
+            </p>
           </div>
         )}
       </div>
@@ -255,40 +276,54 @@ function InPersonCourseCard({ course, priority = false }: { course: InPersonCour
 
       <div className="flex flex-col gap-3 p-4">
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <MapPin className="h-3.5 w-3.5 text-primary" />
-            {course.city}-{course.state}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <CalendarDays className="h-3.5 w-3.5 text-primary" />
-            {course.month} {course.year}
-          </span>
+          {course.city && (
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5 text-primary" />
+              {course.city}-{course.state}
+            </span>
+          )}
+          {course.month && (
+            <span className="inline-flex items-center gap-1">
+              <CalendarDays className="h-3.5 w-3.5 text-primary" />
+              {course.month} {course.year}
+            </span>
+          )}
         </div>
 
         <div>
           <h3 className="font-heading text-[1.35rem] font-semibold leading-tight text-foreground">
             {course.title}
           </h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {course.track} • {course.city}-{course.state}
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Data:</span> {course.date}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Local:</span> {course.venue}
-          </p>
+          {(course.track || course.city) && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {course.track} {course.city ? `• ${course.city}-${course.state}` : ""}
+            </p>
+          )}
+          {course.date && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Data:</span> {course.date}
+            </p>
+          )}
+          {course.venue && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Local:</span> {course.venue}
+            </p>
+          )}
         </div>
 
         {isAvailable ? (
           <div className="pt-1">
-            <div className="mb-2 flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">&nbsp;</span>
-              <span className="font-medium text-muted-foreground">
-                {`${course.completedLessons ?? 0}/${course.totalLessons ?? 0} aulas`}
-              </span>
-            </div>
-            <Progress value={course.progress ?? 0} className="h-1.5" />
+            {course.totalLessons ? (
+              <>
+                <div className="mb-2 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">&nbsp;</span>
+                  <span className="font-medium text-muted-foreground">
+                    {`${course.completedLessons ?? 0}/${course.totalLessons ?? 0} aulas`}
+                  </span>
+                </div>
+                <Progress value={course.progress ?? 0} className="h-1.5" />
+              </>
+            ) : null}
           </div>
         ) : (
           <div className="inline-flex items-center gap-2 pt-1 text-sm text-muted-foreground">
