@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -14,19 +14,34 @@ import {
   Download,
   FileText,
   Coins,
+  CreditCard,
+  QrCode,
+  FileBarChart,
 } from "lucide-react"
 import { AppNavbar } from "@/components/app-navbar"
 import { ExpandableText } from "@/components/expandable-text"
 import { ProfessorTagCard } from "@/components/professor-tag-card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 
 import { getInPersonProfessorTags } from "@/lib/in-person-professor-tags"
 import { getInPersonCourse, inPersonCourses } from "@/lib/mock-data"
 import { getCourseById } from "@/services/courses/coursesService"
 import { checkCourseAccess } from "@/services/enrollments/enrollmentsService"
+import { getCoursePaymentStatus, initiateCheckout, updatePaymentMethod } from "@/services/charges/chargesService"
 import { useAuthStore } from "@/stores/authStore"
-import type { CourseDetailResponse, InstructorDetailResponse } from "@/types"
+import type { CourseDetailResponse, InstructorDetailResponse, PaymentMethod } from "@/types"
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -59,7 +74,16 @@ export default function InPersonCoursePage({
   const [loading, setLoading] = useState(true)
   const [isFallback, setIsFallback] = useState(false)
   const [isEnrolled, setIsEnrolled] = useState(false)
-  
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [paymentTimeout, setPaymentTimeout] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogMode, setDialogMode] = useState<"checkout" | "update">("checkout")
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("CREDIT_CARD")
+  const [pendingInvoiceUrl, setPendingInvoiceUrl] = useState<string | null>(null)
+  const [pendingPaymentMethod, setPendingPaymentMethod] = useState<PaymentMethod | null>(null)
+  const [resumeDialogOpen, setResumeDialogOpen] = useState(false)
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const { isAuthenticated } = useAuthStore()
 
   useEffect(() => {
@@ -95,19 +119,121 @@ export default function InPersonCoursePage({
   }, [courseId])
 
   useEffect(() => {
-    async function verifyEnrollment() {
+    async function verifyEnrollmentAndPayment() {
       if (!isAuthenticated) return
       try {
-        const access = await checkCourseAccess(courseId)
+        const [access, paymentStatus] = await Promise.all([
+          checkCourseAccess(courseId),
+          getCoursePaymentStatus(courseId),
+        ])
         const enrolled = access.status === "ATIVA" || access.status === "CONCLUIDA" || access.status === "PENDENTE"
         setIsEnrolled(enrolled)
+        if (!enrolled && paymentStatus.hasPayment && !paymentStatus.paid && paymentStatus.invoiceUrl) {
+          setPendingInvoiceUrl(paymentStatus.invoiceUrl)
+          setPendingPaymentMethod(paymentStatus.paymentMethod)
+        }
       } catch (error) {
-        console.error("Failed to check course enrollment access:", error)
+        console.error("Failed to check course enrollment/payment status:", error)
       }
     }
 
-    verifyEnrollment()
+    verifyEnrollmentAndPayment()
   }, [courseId, isAuthenticated])
+
+  function stopPolling() {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+      pollingRef.current = null
+    }
+  }
+
+  useEffect(() => {
+    return () => stopPolling()
+  }, [])
+
+  function startPolling() {
+    setPaymentTimeout(false)
+    let attempts = 0
+    const MAX_ATTEMPTS = 40
+
+    pollingRef.current = setInterval(async () => {
+      attempts++
+      try {
+        const access = await checkCourseAccess(courseId)
+        if (access.hasAccess) {
+          stopPolling()
+          setIsEnrolled(true)
+          setPendingInvoiceUrl(null)
+          setPendingPaymentMethod(null)
+          toast.success("Pagamento confirmado! Você já tem acesso ao curso.")
+          return
+        }
+      } catch {
+        // continua tentando
+      }
+
+      if (attempts >= MAX_ATTEMPTS) {
+        stopPolling()
+        setPaymentTimeout(true)
+      }
+    }, 3000)
+  }
+
+  function handleResumePayment() {
+    setResumeDialogOpen(true)
+  }
+
+  function confirmResumePayment() {
+    setResumeDialogOpen(false)
+    if (!pendingInvoiceUrl) return
+    window.open(pendingInvoiceUrl, "_blank")
+    startPolling()
+  }
+
+  function handleCheckout() {
+    if (!isAuthenticated) {
+      window.location.href = "/"
+      return
+    }
+    setDialogMode("checkout")
+    setSelectedMethod("CREDIT_CARD")
+    setDialogOpen(true)
+  }
+
+  function handleChangePaymentMethod() {
+    setDialogMode("update")
+    setSelectedMethod("CREDIT_CARD")
+    setDialogOpen(true)
+  }
+
+  async function confirmPaymentDialog() {
+    try {
+      setCheckoutLoading(true)
+      setDialogOpen(false)
+      const { invoiceUrl } = dialogMode === "checkout"
+        ? await initiateCheckout(courseId, selectedMethod)
+        : await updatePaymentMethod(courseId, selectedMethod)
+      setPendingInvoiceUrl(invoiceUrl)
+      setPendingPaymentMethod(selectedMethod)
+      window.open(invoiceUrl, "_blank")
+      startPolling()
+    } catch (error: any) {
+      if (error?.response?.status === 409) {
+        setIsEnrolled(true)
+        setPendingInvoiceUrl(null)
+        setPendingPaymentMethod(null)
+        toast.success("Você já está inscrito neste curso.")
+      } else {
+        toast.error(
+          dialogMode === "checkout"
+            ? "Não foi possível iniciar o processo de inscrição. Tente novamente."
+            : "Não foi possível alterar o meio de pagamento. Tente novamente."
+        )
+      }
+    } finally {
+      setCheckoutLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -249,17 +375,64 @@ export default function InPersonCoursePage({
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-6">
+            <div className="mt-6 flex flex-wrap items-center gap-4">
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Investimento</span>
                 <span className={`text-2xl font-bold ${isPriceMocked ? "text-red-500" : "text-foreground"}`}>
                   {priceText}
                 </span>
               </div>
-              <Button size="lg" className="px-8" disabled={isEnrolled}>
-                {isEnrolled ? "Inscrito" : "Inscrever-se"}
-              </Button>
+              <div className="flex flex-wrap gap-3">
+                {!isEnrolled && pendingInvoiceUrl ? (
+                  <>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="px-8"
+                      disabled={checkoutLoading}
+                      onClick={handleChangePaymentMethod}
+                    >
+                      {checkoutLoading ? "Aguarde..." : "Alterar meio de pagamento"}
+                    </Button>
+                    <Button
+                      size="lg"
+                      className="px-8"
+                      disabled={checkoutLoading}
+                      onClick={handleResumePayment}
+                    >
+                      Realizar pagamento
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="px-8"
+                    disabled={isEnrolled || checkoutLoading}
+                    onClick={handleCheckout}
+                  >
+                    {isEnrolled ? "Inscrito" : checkoutLoading ? "Aguarde..." : "Inscrever-se"}
+                  </Button>
+                )}
+              </div>
             </div>
+
+            {!isEnrolled && pendingInvoiceUrl && pendingPaymentMethod && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Pagamento pendente via{" "}
+                <span className="font-medium text-foreground">
+                  {pendingPaymentMethod === "CREDIT_CARD" ? "Cartão de crédito" : pendingPaymentMethod === "PIX" ? "PIX" : "Boleto bancário"}
+                </span>
+              </p>
+            )}
+
+            {paymentTimeout && !isEnrolled && (
+              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                <p className="font-semibold">Pagamento em processamento</p>
+                <p className="mt-1 text-amber-700">
+                  Não identificamos a confirmação ainda — isso é normal para PIX e boleto. Recarregue a página mais tarde para verificar seu acesso.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="relative min-h-[280px] overflow-hidden rounded-xl bg-secondary/50">
@@ -385,6 +558,93 @@ export default function InPersonCoursePage({
           </div>
         </section>
       </div>
+
+      {/* Simple confirmation dialog for resuming a pending payment */}
+      <Dialog open={resumeDialogOpen} onOpenChange={setResumeDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Continuar pagamento</DialogTitle>
+            <DialogDescription>
+              Você será redirecionado para a página segura de pagamento do Asaas para concluir sua inscrição. Clique em continuar para prosseguir.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 flex gap-2">
+            <Button variant="outline" onClick={() => setResumeDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmResumePayment}>
+              Continuar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment method selector — used for both checkout and update-payment */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {dialogMode === "update" ? "Alterar meio de pagamento" : "Escolha a forma de pagamento"}
+            </DialogTitle>
+            <DialogDescription>
+              {dialogMode === "update"
+                ? "O link de pagamento anterior será cancelado e um novo será gerado com o método escolhido. Você será redirecionado para a página segura do Asaas."
+                : "Você será redirecionado para a página segura de pagamento do Asaas. Escolha como deseja pagar e clique em continuar."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <RadioGroup
+            value={selectedMethod}
+            onValueChange={(v) => setSelectedMethod(v as PaymentMethod)}
+            className="mt-2 flex flex-col gap-3"
+          >
+            <Label
+              htmlFor="method-credit"
+              className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition-colors ${selectedMethod === "CREDIT_CARD" ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"}`}
+            >
+              <RadioGroupItem value="CREDIT_CARD" id="method-credit" />
+              <CreditCard className="h-5 w-5 text-accent shrink-0" />
+              <div className="flex flex-col">
+                <span className="font-medium text-sm text-foreground">Cartão de crédito</span>
+                <span className="text-xs text-muted-foreground">Parcelamento em até 3x</span>
+              </div>
+            </Label>
+
+            <Label
+              htmlFor="method-pix"
+              className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition-colors ${selectedMethod === "PIX" ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"}`}
+            >
+              <RadioGroupItem value="PIX" id="method-pix" />
+              <QrCode className="h-5 w-5 text-accent shrink-0" />
+              <div className="flex flex-col">
+                <span className="font-medium text-sm text-foreground">PIX</span>
+                <span className="text-xs text-muted-foreground">Pagamento à vista, confirmação em minutos</span>
+              </div>
+            </Label>
+
+            <Label
+              htmlFor="method-boleto"
+              className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition-colors ${selectedMethod === "BOLETO" ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"}`}
+            >
+              <RadioGroupItem value="BOLETO" id="method-boleto" />
+              <FileBarChart className="h-5 w-5 text-accent shrink-0" />
+              <div className="flex flex-col">
+                <span className="font-medium text-sm text-foreground">Boleto bancário</span>
+                <span className="text-xs text-muted-foreground">Pagamento à vista, compensação em até 1 dia útil</span>
+              </div>
+            </Label>
+          </RadioGroup>
+
+          <DialogFooter className="mt-4 flex gap-2">
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmPaymentDialog} disabled={checkoutLoading}>
+              {checkoutLoading ? "Aguarde..." : "Continuar para o pagamento"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

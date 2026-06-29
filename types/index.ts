@@ -108,5 +108,22 @@ export interface CourseAccessResponse {
   status: EnrollmentStatus | null
 }
 
+export type PaymentMethod = "PIX" | "BOLETO" | "CREDIT_CARD"
+
+export interface CheckoutResponse {
+  invoiceUrl: string
+}
+
+export type CoursePaymentStatus = "PENDENTE" | "PAGA" | "VENCIDO" | "CANCELADA" | "ESTORNADA"
+
+export interface CoursePaymentStatusResponse {
+  courseId: string
+  hasPayment: boolean
+  paid: boolean
+  status: CoursePaymentStatus | null
+  invoiceUrl: string | null
+  paymentMethod: PaymentMethod | null
+}
+
 
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -24,6 +25,7 @@ import logoEsc from "@/public/9940c5f4-e4f5-4586-94f8-b9247594e336.png"
 import pronoiaLogo from "@/public/logos/pronoia-logo-branco.png"
 
 export default function LoginPage() {
+  const router = useRouter()
   const login = useAuthStore((s) => s.login)
   const loading = useAuthStore((s) => s.isLoading)
   const [email, setEmail] = useState("")
@@ -36,8 +38,7 @@ export default function LoginPage() {
     e.preventDefault()
     try {
       await login({ email, password })
-      // Full navigation (not pushState) so Firefox/Chrome password managers detect the login.
-      window.location.href = "/dashboard"
+      router.push("/dashboard")
     } catch {
       // Backend returns 500 (not 401) for bad credentials — treat any failure as a failed login.
       toast.error("E-mail ou senha inválidos. Tente novamente.")
